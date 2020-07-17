@@ -1,0 +1,24 @@
+{
+  "name": "serotoninbot",
+  "version": "1.0.0",
+  "description": "A Discord bot to dispense Serotonin to your lives!",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asubowo/serotoninbot.git"
+  },
+  "author": "Andrew Subowo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/asubowo/serotoninbot/issues"
+  },
+  "homepage": "https://github.com/asubowo/serotoninbot#readme",
+  "dependencies": {
+    "discord": "^0.8.2",
+    "dotenv": "^8.2.0",
+    "snoowrap": "^1.21.0"
+  }
+}
