@@ -1,0 +1,28 @@
+{
+  "name": "serotoninbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "serotoninbot.js",
+  "dependencies": {
+    "Promise": "^1.0.5",
+    "discord": "^0.8.2",
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
+    "ffmpeg-static": "^4.2.6",
+    "promise": "^8.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asubowo/serotoninbot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/asubowo/serotoninbot/issues"
+  },
+  "homepage": "https://github.com/asubowo/serotoninbot#readme"
+}
