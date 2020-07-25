@@ -2,6 +2,7 @@
  * @author Andrew Subowo
  * @version 1.0
  */
+require('dotenv').config();
 
 const discord = require('discord.js');
 const handler = require('./handler.js');
@@ -13,5 +14,11 @@ client.on('ready', function() {
 })
 
 client.on('message', function(msg) {
-    handler.handleCommand(msg);
+    // Ignore messages sent from any bots
+    if (!msg.author.bot) {
+        // Pass the message contents onto the handler class
+         handler.handleCommand(msg);
+    }
 });
+
+client.login(process.env.TOKEN);
