@@ -5,3 +5,4 @@
  */
 exports.audio = require('./commands/audio/audio.js');
 exports.sublinker = require('./commands/reddit/sublinker.js');
+exports.breakup = require('./commands/misc/breakup.js');

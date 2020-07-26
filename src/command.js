@@ -47,7 +47,7 @@ Command.prototype.parseMessage = function(msg) {
  * @param msg 
  */
 function containsSubreddit(msg) {
-    const regex = /r\/[aA-zZ]*/gm;
+    const regex = /[rR]\/[aA-zZ]*/gm;
     const subreddits = msg.content.match(regex);
     
     // Ignore if someone linked to reddit directly.

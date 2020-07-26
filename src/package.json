@@ -4,6 +4,7 @@
   "description": "",
   "main": "serotoninbot.js",
   "dependencies": {
+    "@discordjs/opus": "^0.3.2",
     "Promise": "^1.0.5",
     "discord": "^0.8.2",
     "discord.js": "^12.2.0",
