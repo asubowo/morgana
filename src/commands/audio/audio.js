@@ -29,7 +29,6 @@ function playAudio(audio, command) {
     voiceChannel.join().then(function(connection) {
       const dispatcher = connection.play('../assets/audio/' + audio);
       dispatcher.on('finish', () => {
-        console.log('done playing file');
         voiceChannel.leave();
       });
     }).catch(function(err) {
