@@ -35,6 +35,8 @@ var handleCommand = function(msg) {
         case '!breakup':
           router.breakup.getbreakups(results);
           break;
+        case '!uwu':
+          router.uwuinator.uwuinate(results);
       } 
     })
 }
