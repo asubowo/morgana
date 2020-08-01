@@ -10,3 +10,5 @@ This bot will automatically relink mentions of `'/r/<subreddit>'`, `'r/<subreddi
 `!audio` followed by the appropriate tag for a clip, will have the bot join the a voice channel you are in, play the sound, then leave immediately. 
 #### !breakup
 `!breakup` returns data from my 'Exidents Happen' website/API.
+#### !uwu
+`!uwu` OwO-izes the text after the command.
