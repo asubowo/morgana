@@ -37,6 +37,8 @@ var handleCommand = function(msg) {
           break;
         case '!uwu':
           router.uwuinator.uwuinate(results);
+        case '!roll':
+          router.diceroll.roll(results);
       } 
     })
 }
