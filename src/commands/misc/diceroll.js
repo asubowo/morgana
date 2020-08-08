@@ -35,12 +35,11 @@ var roll = function (discord) {
             discord.msg.reply("please include a number next to the modifier!")
             return;
         } else {
-
             modifier = parseInt(modifierInput[1]);
             if (subtraction) {
                 modifier = modifier * -1;
             }
-            if (!Number.isInteger(modifier)) {
+            if (!Number.isInteger(modifier) || Math.abs(modifier) > 100) {
                 discord.msg.reply("you've given me an invalid die modifier.");
                 return;
             }
@@ -56,7 +55,7 @@ var roll = function (discord) {
         multiplier = 1;
     } else {
         multiplier = parseInt(diceRoll[0]);
-        if (!Number.isInteger(multiplier)) {
+        if (!Number.isInteger(multiplier) || multiplier > 100 || multiplier <= 0) {
             discord.msg.reply("I can't roll " + diceRoll[0] + " dice!");
             return;
         }
@@ -69,7 +68,7 @@ var roll = function (discord) {
         return;
     } else {
         diceType = parseInt(diceRoll[1]);
-        if (diceType === 0 || !Number.isInteger(diceType)) {
+        if (!Number.isInteger(diceType) || diceType === 0 || diceType > 100 || diceType <= 0) {
             discord.msg.reply("STOP! You have violated the law. Your invalid die are now forfeit.");
             return;
         } 
@@ -84,6 +83,22 @@ var roll = function (discord) {
     }
 
     let result = rollTotal + modifier;
+    let highestPotential = multiplier * diceType + modifier;
+    let ratio = result/highestPotential;
+
+    let flavorText = "";
+    if (ratio >= 1) {
+        flavorText = "GLORIOUS SUCCESS";
+    } else if (ratio < 1 && ratio >= 0.75) {
+        let phrases = ["Solid roll!", "Nicely done!", "Nice!"];
+        flavorText = phrases[Math.floor(Math.random() * phrases.length)];
+    } else if (ratio < 0.75 && ratio >= 0.50) {
+        let phrases = ["Not too bad!", "You're quite the average person!", "Eh."];
+        flavorText = phrases[Math.floor(Math.random() * phrases.length)];
+    } else {
+        let phrases = ["Oof...", "Could be better...", "Better luck next time...", "Are you even trying?", "Just stop rolling."];
+        flavorText = phrases[Math.floor(Math.random() * phrases.length)];
+    }
 
     // Check if the user passed in a modifier, and if we did, dynamically update the string
     let modifierString = "";
@@ -100,7 +115,7 @@ var roll = function (discord) {
 
     const embed = new Discord.MessageEmbed()
     .setColor('#0099ff')
-    .setTitle("You rolled a " + result + "! ")
+    .setTitle("You rolled a " + result + "! " + flavorText)
     .setDescription("(" + rollHolder.join(" + ") + modifierString + ")");
     discord.msg.channel.send(embed);
 }
