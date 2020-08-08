@@ -88,15 +88,16 @@ var roll = function (discord) {
 
     let flavorText = "";
     if (ratio >= 1) {
-        flavorText = "GLORIOUS SUCCESS";
+        let phrases = ["GLORIOUS SUCCESS", "ULIMITED POWER", "YOU ARE THE DUNGEON MASTER NOW"];
+        flavorText = phrases[Math.floor(Math.random() * phrases.length)];
     } else if (ratio < 1 && ratio >= 0.75) {
-        let phrases = ["Solid roll!", "Nicely done!", "Nice!"];
+        let phrases = ["Solid roll!", "Nicely done!", "Nice!", "A decent roll!"];
         flavorText = phrases[Math.floor(Math.random() * phrases.length)];
     } else if (ratio < 0.75 && ratio >= 0.50) {
-        let phrases = ["Not too bad!", "You're quite the average person!", "Eh."];
+        let phrases = ["Not too bad!", "You're quite the average person!", "Eh.", "You could've done worse.", "I suppose it's a decent roll."];
         flavorText = phrases[Math.floor(Math.random() * phrases.length)];
     } else {
-        let phrases = ["Oof...", "Could be better...", "Better luck next time...", "Are you even trying?", "Just stop rolling."];
+        let phrases = ["Oof...", "Could be better...", "Better luck next time...", "Are you even trying?", "Just stop rolling.", "You should stick to card games."];
         flavorText = phrases[Math.floor(Math.random() * phrases.length)];
     }
 
@@ -121,7 +122,6 @@ var roll = function (discord) {
 }
 
 /**
- * 
  * @param {integer} max The highest we can roll
  */
 function getRandomInt(max) {
