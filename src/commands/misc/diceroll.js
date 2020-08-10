@@ -3,10 +3,13 @@
  * @since 1.0 contributory
  */
 
-/**
- * @param msg Discord the Discord entity returned
- */
+
 const Discord = require('discord.js');
+
+/**
+ * Rolls a specified amount of die, with the max of 100 die rolls, and 100-sided
+ * @param {DiscordWrapper} discord 
+ */
 var roll = function (discord) {
 
     //Get the content after !roll command, and sanitize it all from spaces
@@ -122,7 +125,7 @@ var roll = function (discord) {
 }
 
 /**
- * @param {integer} max The highest we can roll
+ * @param {Integer} max The highest we can roll
  */
 function getRandomInt(max) {
     return Math.floor(Math.random() * (max)) + 1;

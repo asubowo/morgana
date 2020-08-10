@@ -6,7 +6,7 @@
 
  /**
   * Generic Command class to hold our jazz
-  * @param msg 
+  * @param {String} msg 
   */
 function DiscordWrapper(msg) {
     var input = this.parseMessage(msg);
@@ -22,7 +22,10 @@ function DiscordWrapper(msg) {
     this.subreddit = input.subreddit;
 }
 
-// Bot commands must start with '!'
+/**
+ * Function to parse incoming messages
+ * @param {String} msg 
+ */
 DiscordWrapper.prototype.parseMessage = function(msg) {
 
     // First check if message has a subreddit, which takes priority
@@ -44,7 +47,7 @@ DiscordWrapper.prototype.parseMessage = function(msg) {
 
 /**
  * Function to read through potential quick reddit links
- * @param msg 
+ * @param {String} msg The string to parse
  */
 function containsSubreddit(msg) {
     const regex = /[rR]\/[aA-zZ]*/gm;

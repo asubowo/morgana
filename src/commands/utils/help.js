@@ -6,6 +6,7 @@
 
 const Discord = require('discord.js');
 const DiscordWrapper = require('../../discordWrapper');
+
 /**
  * Returns the help page of Morgana
  * @param {DiscordWrapper} discord 
@@ -36,7 +37,6 @@ var getHelp = function (discord) {
             sendEmbed(title, description, discord);
             break;
     }
-
 }
 
 /**
