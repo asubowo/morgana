@@ -12,3 +12,7 @@ This bot will automatically relink mentions of `'/r/<subreddit>'`, `'r/<subreddi
 `!breakup` returns data from my 'Exidents Happen' website/API.
 #### !uwu
 `!uwu` OwO-izes the text after the command.
+#### !roll
+`!roll` lets you roll die. Perfect for DnD (e.g. `!roll 2d6+3`, and so on)
+#### !help
+`!help` displays a list of available commands
