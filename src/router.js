@@ -8,3 +8,4 @@ exports.sublinker = require('./commands/reddit/sublinker.js');
 exports.breakup = require('./commands/misc/breakup.js');
 exports.uwuinator = require('./commands/misc/uwu.js');
 exports.diceroll = require('./commands/misc/diceroll.js');
+exports.help = require('./commands/utils/help.js');

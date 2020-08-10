@@ -4,7 +4,7 @@
  * @version 1.0
  */
 const router = require('./router.js');
-var Command = require('./command.js');
+var DiscordWrapper = require('./discordWrapper.js');
 
 /**
  * Determines which command was chosen, and calls it.
@@ -13,7 +13,7 @@ var Command = require('./command.js');
  */
 var handleCommand = function(msg) {
     return new Promise(function(resolve, reject) {
-      resolve(new Command(msg));
+      resolve(new DiscordWrapper(msg));
     }).then(results => {
 
       if (results.subreddit) {
@@ -27,7 +27,7 @@ var handleCommand = function(msg) {
 
       switch (results.command) {
         default:
-          msg.reply('Invalid command.');
+          msg.reply('invalid command. Use !help for more information.');
           break;
         case '!audio':
           router.audio.audio(results);
@@ -37,8 +37,13 @@ var handleCommand = function(msg) {
           break;
         case '!uwu':
           router.uwuinator.uwuinate(results);
+          break;
         case '!roll':
           router.diceroll.roll(results);
+          break;
+        case '!help':
+          router.help.getHelp(results);
+          break;
       } 
     })
 }

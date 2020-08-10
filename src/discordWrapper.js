@@ -8,7 +8,7 @@
   * Generic Command class to hold our jazz
   * @param msg 
   */
-function Command(msg) {
+function DiscordWrapper(msg) {
     var input = this.parseMessage(msg);
     if (input == undefined) {
         return;
@@ -23,7 +23,7 @@ function Command(msg) {
 }
 
 // Bot commands must start with '!'
-Command.prototype.parseMessage = function(msg) {
+DiscordWrapper.prototype.parseMessage = function(msg) {
 
     // First check if message has a subreddit, which takes priority
     if (containsSubreddit(msg)) {
@@ -61,4 +61,4 @@ function containsSubreddit(msg) {
     }
 }
 
-module.exports = Command;
+module.exports = DiscordWrapper;
