@@ -1,14 +1,14 @@
 /**
- * Class to run commands
+ * Wrapper class around an incoming Discord message
  * @author Andrew Subowo
  * @since 1.0
  */
 
  /**
   * Generic Command class to hold our jazz
-  * @param msg 
+  * @param {String} msg 
   */
-function Command(msg) {
+function DiscordWrapper(msg) {
     var input = this.parseMessage(msg);
     if (input == undefined) {
         return;
@@ -22,8 +22,11 @@ function Command(msg) {
     this.subreddit = input.subreddit;
 }
 
-// Bot commands must start with '!'
-Command.prototype.parseMessage = function(msg) {
+/**
+ * Function to parse incoming messages
+ * @param {String} msg 
+ */
+DiscordWrapper.prototype.parseMessage = function(msg) {
 
     // First check if message has a subreddit, which takes priority
     if (containsSubreddit(msg)) {
@@ -44,7 +47,7 @@ Command.prototype.parseMessage = function(msg) {
 
 /**
  * Function to read through potential quick reddit links
- * @param msg 
+ * @param {String} msg The string to parse
  */
 function containsSubreddit(msg) {
     const regex = /[rR]\/[aA-zZ]*/gm;
@@ -61,4 +64,4 @@ function containsSubreddit(msg) {
     }
 }
 
-module.exports = Command;
+module.exports = DiscordWrapper;
