@@ -9,7 +9,7 @@
 const http = require('http');
 const Discord = require('discord.js');
 var getbreakups = function (command) {
-    http.get('http://exidents.andrewsubowo.com/exidents/breakups', (resp) => {
+    http.get('http://labs.andrewsubowo.com/exidents/breakups', (resp) => {
         let data = '';
         resp.on('data', (chunk) => {
             data += chunk;
@@ -19,7 +19,7 @@ var getbreakups = function (command) {
             const embed = new Discord.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle('Exidents Happen')
-                .setURL('http://exidents.andrewsubowo.com')
+                .setURL('http://labs.andrewsubowo.com/exidents')
                 .addFields(
                     { name: 'Breakups', value: JSON.parse(data).breakups.toString() },
                     { name: 'Since', value: JSON.parse(data).lastRecordedDate.toString() }
