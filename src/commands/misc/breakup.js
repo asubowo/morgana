@@ -9,7 +9,7 @@
 const http = require('http');
 const Discord = require('discord.js');
 var getbreakups = function (command) {
-    http.get('http://exidents.andrewsubowo.com/breakups', (resp) => {
+    http.get('http://exidents.andrewsubowo.com/exidents/breakups', (resp) => {
         let data = '';
         resp.on('data', (chunk) => {
             data += chunk;
