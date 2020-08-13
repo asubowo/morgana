@@ -9,7 +9,7 @@
  * @param {DiscordWrapper} discord 
  */
 var sublinker = function(discord) {
-    const regex = /[rR]\/[aA0-zZ9]*/gm;
+    const regex = /([^aA-zZ\s\/]|\b)[rR]\/\w+/gm;
     const subreddits = discord.msg.content.match(regex);
     discord.msg.channel.send('https://www.reddit.com/' + subreddits[0].toLowerCase());
   }
