@@ -9,3 +9,4 @@ exports.breakup = require('./commands/misc/breakup.js');
 exports.uwuinator = require('./commands/misc/uwu.js');
 exports.diceroll = require('./commands/misc/diceroll.js');
 exports.help = require('./commands/utils/help.js');
+exports.speedTest = require('./commands/utils/speedtest.js')
