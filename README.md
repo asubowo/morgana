@@ -10,9 +10,11 @@ This bot will automatically relink mentions of `'/r/<subreddit>'`, `'r/<subreddi
 `!audio` followed by the appropriate tag for a clip, will have the bot join the a voice channel you are in, play the sound, then leave immediately. 
 #### !breakup
 `!breakup` returns data from my 'Exidents Happen' website/API.
-#### !uwu
-`!uwu` OwO-izes the text after the command.
-#### !roll
-`!roll` lets you roll die. Perfect for DnD (e.g. `!roll 2d6+3`, and so on)
 #### !help
 `!help` displays a list of available commands
+#### !roll
+`!roll` lets you roll die. Perfect for DnD (e.g. `!roll 2d6+3`, and so on)
+#### !speedtest
+`!speedtest` hits the speedtest.net public API to perform a speedtest from wherever this bot (affectionately known as Morgana) is running from.
+#### !uwu
+`!uwu` OwO-izes the text after the command.
