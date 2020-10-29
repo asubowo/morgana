@@ -44,6 +44,9 @@ var handleCommand = function(msg) {
         case '!help':
           router.help.getHelp(results);
           break;
+        case '!speedtest':
+          router.speedTest.speedTest(results);
+          break;
       } 
     })
 }
