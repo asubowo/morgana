@@ -17,7 +17,7 @@ var getHelp = function (discord) {
     switch (discord.arg) {
         default:
             title = "Command list:";
-            description = "!audio, !breakup, !roll, !uwu\n\nTry !help <command name> (!help roll) for more information about that particular command.";
+            description = "!audio, !breakup, !roll, !speedtest, !uwu\n\nTry !help <command name> (!help roll) for more information about that particular command.";
             sendEmbed(title, description, discord);
             break;
         case 'audio':
@@ -34,6 +34,11 @@ var getHelp = function (discord) {
         case 'roll':
             title = "!roll";
             description = "It's a DnD dice roller! Can roll a maximum of 100, 100-sided die. E.g. '!roll 22d20'";
+            sendEmbed(title, description, discord);
+            break;
+        case 'speedtest':
+            title = "!speedtest";
+            description = "Perform network diagnostics for this me!";
             sendEmbed(title, description, discord);
             break;
     }
