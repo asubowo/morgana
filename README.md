@@ -1,4 +1,4 @@
-# SerotoninBot (Lovingly known as Morgana)
+# Morgana (formally known as SerotoninBot)
 A Discord bot written in NodeJS to automatically dispense serotonin wherever deployed!
 
 # Features
