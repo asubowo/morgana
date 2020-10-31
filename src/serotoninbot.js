@@ -11,7 +11,7 @@ const client = new discord.Client();
 
 client.on('ready', function() {
     console.log('bot initialized');
-    client.user.setActivity('over Cafe LeBLanc', { type: 'WATCHING' }) //PLAYING, STREAMING, LISTENING, WATCHING
+    client.user.setActivity('over Cafe LeBlanc', { type: 'WATCHING' }) //PLAYING, STREAMING, LISTENING, WATCHING
 });
 
 client.on('message', function(msg) {
