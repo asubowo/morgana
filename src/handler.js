@@ -20,6 +20,10 @@ var handleCommand = function(msg) {
         router.sublinker.sublinker(results);
       }
 
+      if (results.stock) {
+        router.stocks.getStonks(results);
+      }
+
       // Check for a valid command structure. If we don't have one, quit immediately.
       if (!results.isCommand) {
         return;
@@ -47,6 +51,12 @@ var handleCommand = function(msg) {
         case '!speedtest':
           router.speedTest.speedTest(results);
           break;
+        case '!lfg':
+          router.lfg.lfg(results);
+          break;
+//        case '!morgana':
+//          router.tama.mona(results);
+//          break;
       } 
     })
 }

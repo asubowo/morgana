@@ -8,6 +8,7 @@
  */
 const http = require('http');
 const Discord = require('discord.js');
+
 var getbreakups = function (command) {
     http.get('http://labs.andrewsubowo.com/exidents/breakups', (resp) => {
         let data = '';
