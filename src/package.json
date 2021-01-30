@@ -12,7 +12,8 @@
     "ffmpeg-static": "^4.2.6",
     "lzma-native": "^6.0.1",
     "promise": "^8.1.0",
-    "speedtest-net": "^2.1.1"
+    "speedtest-net": "^2.1.1",
+    "stock-info": "^1.2.0"
   },
   "devDependencies": {},
   "scripts": {
