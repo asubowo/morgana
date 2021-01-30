@@ -6,7 +6,7 @@
 /**
  * @param msg Discord the Discord entity returned
  */
-var uwuinate = function (discord) {
+var uwuinate = function(discord) {
     var content = discord.msg.content;
     content = content.substr(content.indexOf(' ') + 1);
     if (content === "!uwu") {

@@ -18,7 +18,7 @@ client.on('message', function(msg) {
     // Ignore messages sent from any bots
     if (!msg.author.bot) {
         // Pass the message contents onto the handler class
-         handler.handleCommand(msg);
+        handler.handleCommand(msg);
     }
 });
 

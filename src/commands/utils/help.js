@@ -41,6 +41,11 @@ var getHelp = function (discord) {
             description = "Perform network diagnostics for this me!";
             sendEmbed(title, description, discord);
             break;
+        case 'lfg':
+            title = "!lfg";
+            description = "Usage: !lfg <game> <time>. E.g. '!lfg amongus 10pm'"
+            sendEmbed(title, description, discord);
+            break;
     }
 }
 
