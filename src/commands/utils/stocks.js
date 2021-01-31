@@ -49,7 +49,7 @@ var getStonks = function (discord) {
 
         } catch (err) {
             console.log(err.message);
-            discord.msg.channel.send(`Failed to retrieve ${stock}!`);
+            discord.msg.channel.send(`Failed to retrieve $${stock}!`);
         }
     })();
     
