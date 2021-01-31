@@ -7,7 +7,7 @@ const si = require('stock-info');
 const Discord = require('discord.js');
 
 var getStonks = function (discord) {
-    var regex = /\$([A-Z])\w+/gim;
+    var regex = /\$([aA-zZ])\w{0,4}\b/gim;
     var stock = discord.msg.content.match(regex);
     
     for (var index = 0; index < stock.length; index++) {
@@ -49,7 +49,7 @@ var getStonks = function (discord) {
 
         } catch (err) {
             console.log(err.message);
-            discord.msg.channel.send("Failed to retrieve stock!");
+            discord.msg.channel.send(`Failed to retrieve ${stock}!`);
         }
     })();
     
