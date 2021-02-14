@@ -1,4 +1,6 @@
-# Morgana (formally known as SerotoninBot)
+![build status](https://img.shields.io/docker/cloud/build/asubowo/morgana?style=for-the-badge)
+
+# Morgana
 A Discord bot written in NodeJS to automatically dispense serotonin wherever deployed!
 
 # Features
