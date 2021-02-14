@@ -1,8 +1,8 @@
 {
-  "name": "serotoninbot",
+  "name": "morgana",
   "version": "1.0.0",
   "description": "",
-  "main": "serotoninbot.js",
+  "main": "morgana.js",
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
     "Promise": "^1.0.5",
@@ -21,12 +21,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/asubowo/serotoninbot.git"
+    "url": "git+https://github.com/asubowo/morgana.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/asubowo/serotoninbot/issues"
+    "url": "https://github.com/asubowo/morgana/issues"
   },
-  "homepage": "https://github.com/asubowo/serotoninbot#readme"
+  "homepage": "https://github.com/asubowo/morgana#readme"
 }
