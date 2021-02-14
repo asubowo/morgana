@@ -37,7 +37,7 @@ DiscordWrapper.prototype.parseMessage = function(msg) {
     }
     
     content = msg.content;
-    let regex = /\$([A-Z])\w+/gim;
+    let regex = /\$([aA-zZ])\w{0,4}\b/gim;
     if (content.match(regex)) {
         return({'stock' : true})
     }
