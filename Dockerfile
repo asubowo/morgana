@@ -5,10 +5,12 @@ USER root
 WORKDIR /apps/node/morgana
 
 # Install app dependencies
-COPY src/package*.json src/
+WORKDIR /apps/node/morgana/src
+COPY src/package*.json /apps/node/morgana/src/
 RUN npm install
 
 # Bundle app source
+WORKDIR /apps/node/morgana
 COPY . .
 
 WORKDIR /apps/node/morgana/src
