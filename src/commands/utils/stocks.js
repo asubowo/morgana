@@ -3,7 +3,7 @@
  * @since 1.0 contributory
  */
 
-const si = require('stock-info');
+var yahooFinance = require('yahoo-finance');
 const Discord = require('discord.js');
 
 var getStonks = function (discord) {
@@ -17,25 +17,27 @@ var getStonks = function (discord) {
     }
 
     (async() => {
+
         try {
-            let info = si.getStocksInfo(stock);
-            
+            console.log(stock)
             let shortNames = [];
             let marketPrices = [];
-            (await info).forEach(element => {
 
-                if (element.shortName == undefined) {
-                    shortNames.push(element.symbol);
-                } else {
-                    shortNames.push(element.shortName);
-                }
+            for (var i = 0; i < stock.length; i++) {
+                let result = await yahooFinance.quote(stock[i], ['price']);
                 
-                if (element.regularMarketPrice == undefined) {
+                if (result.price.shortName == undefined) {
+                    shortNames.push(result.price.symbol);
+                } else {
+                    shortNames.push(result.price.shortName);
+                }
+
+                if (result.price.regularMarketPrice == undefined) {
                     marketPrices.push("Delayed quote or unknown stock")
                 } else {
-                    marketPrices.push(element.regularMarketPrice);    
+                    marketPrices.push(result.price.regularMarketPrice);    
                 }  
-            });
+            }
 
             const embed = new Discord.MessageEmbed()
                 .setColor("RANDOM")
@@ -48,6 +50,7 @@ var getStonks = function (discord) {
             discord.msg.channel.send(embed);
 
         } catch (err) {
+            console.log(err)
             console.log(err.message);
             discord.msg.channel.send(`Failed to retrieve $${stock}!`);
         }

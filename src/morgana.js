@@ -6,7 +6,6 @@ require('dotenv').config();
 
 const discord = require('discord.js');
 const handler = require('./handler.js');
-const promise = require('Promise');
 const client = new discord.Client();
 
 client.on('ready', function() {

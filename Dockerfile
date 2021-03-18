@@ -2,12 +2,11 @@ FROM node:12
 
 USER root
 
-WORKDIR /apps/node/morgana
-
 # Install app dependencies
 WORKDIR /apps/node/morgana/src
 COPY src/package*.json /apps/node/morgana/src/
 RUN npm install
+RUN npm update
 
 # Bundle app source
 WORKDIR /apps/node/morgana
