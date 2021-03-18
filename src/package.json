@@ -5,16 +5,14 @@
   "main": "morgana.js",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
-    "Promise": "^1.0.5",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.2.6",
     "lzma-native": "^6.0.1",
-    "promise": "^8.1.0",
+    "opusscript": "^0.0.8",
     "speedtest-net": "^2.1.1",
-    "stock-info": "^1.2.0"
+    "yahoo-finance": "^0.3.7"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
