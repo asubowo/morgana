@@ -1,16 +1,16 @@
 /**
  * @author Andrew Subowo
- * @since 1.0 contributory
+ * @since 2.0
  */
 
 /**
- * @param msg The msg body
+ * 
  */
-var sublinker = function(command) {
-    const regex = /[rR]\/[aA0-zZ9]*/gm;
-    const subreddits = command.msg.content.match(regex);
-    command.msg.channel.send('https://www.reddit.com/' + subreddits[0].toLowerCase());
-  }
+async function sublinker(messageContext) {
+  const regex = /([^aA-zZ\s\/]|\b)[rR]\/\w+/gm;
+  const subreddits = messageContext.content.match(regex);
+  return await messageContext.channel.send('https://www.reddit.com/' + subreddits[0].toLowerCase());
+}
 
 module.exports = {
     sublinker : sublinker
