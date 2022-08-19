@@ -13,3 +13,4 @@ RUN npm update
 
 WORKDIR /apps/node/morgana
 ENTRYPOINT [ "node", "src/morgana.js" ]
+
