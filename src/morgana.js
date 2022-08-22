@@ -7,7 +7,7 @@
 require('dotenv').config({ path: '../.env' });
 
 const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.Guids, GatewayIntentBits.GuildVoiceStates] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 const fs = require('node:fs');
 const path = require('node:path');
 const stocks = require('./commands/utils/stocks.js');
