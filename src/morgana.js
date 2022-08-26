@@ -6,7 +6,7 @@
  */
 require('dotenv').config({ path: '../.env' });
 
-const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActivityType, InteractionType } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 const fs = require('node:fs');
 const path = require('node:path');
@@ -53,7 +53,6 @@ client.on('messageCreate', async message => {
 client.on('interactionCreate', async interaction => {
 
     if (!interaction.isChatInputCommand()) return;
-
     // If the slash command isn't anything we know of at boot, ignore it
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
