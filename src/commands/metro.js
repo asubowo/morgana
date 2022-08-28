@@ -7,8 +7,6 @@ require('dotenv').config({ path: '../.env' });
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const https = require('https');
 const PRIMARY_API_KEY = process.env.WMATA_PRIMARY_KEY;
-const SECONDARY_API_KEY = process.env.WMATA_SECONDARY_KEY;
-
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -60,7 +58,7 @@ module.exports = {
           for (var incident = 0; incident < res.Incidents.length; incident++) {
             const lineAffected = incidents[incident].LinesAffected.toString().split('\;')[0];
             const description = incidents[incident].Description.toString();
-            embed.addFields({ name: lineAffected, value: description });
+            embed.addFields({ name: getColor(lineAffected) + ' ' + lineAffected, value: description });
           }
 
           return interaction.editReply({ embeds: [embed] });
@@ -107,8 +105,9 @@ module.exports = {
           let min = []
           let line = [];
           for (var i = 0; i < res.Trains.length; i++) {
-            
-            if (stations[i].LocationName.toString().toLowerCase().match(station.toLowerCase())) {
+
+            var regex = new RegExp('^.*\\b(' + station + ')\\b(?!(\\s+).)*$', 'gim')
+            if (stations[i].LocationName.toString().match(regex)) {  
               destination = [...destination, stations[i].Destination.toString()];
               min = [...min, stations[i].Min.toString()];
               line = [...line, stations[i].Line.toString()];
@@ -116,30 +115,36 @@ module.exports = {
           }
 
           if (destination.length == 0) {
-            return interaction.editReply({ content: 'Could not find info for ' + station, ephemeral: true })
+            return interaction.editReply({ content: 'No info was found for ' + station, ephemeral: true })
           } else {
-            embed.setTitle('Station information for ' + station.toUpperCase())
-            let destinations = "";
-            let mins = "";
-            let lines = "";
+            
+            embed.setTitle(station.toUpperCase());
             for (var i = 0; i < destination.length; i++) {
-              destinations = destinations + destination[i] + '\n'
-              lines = lines + line[i] + '\n'
-              mins = mins + min[i] + '\n'
-            }
-  
-            embed.addFields(
-              { name: 'LN', value: lines, inline: true },
-              { name: 'DEST', value: destinations, inline: true },
-              { name: 'MIN', value: mins, inline: true}
+              embed.addFields(
+                { name: getColor(line[i]) + ' ' + line[i] + ' ' + destination[i], value: min[i] }
               )
-  
+            }
             return interaction.editReply({ embeds: [embed] });
           }
         })
       })
     }
   }
-
 }
 
+/**
+ * 
+ * @param {String} line The line
+ */
+function getColor(line) {
+  const lineMap = new Map ([
+    ['RD', '🔴'],
+    ['OR', '🟠'],
+    ['YL', '🟡'],
+    ['GR', '🟢'],
+    ['BL', '🔵'],
+    ['SV', '⚪']
+  ])
+  
+  return lineMap.get(line);
+}
