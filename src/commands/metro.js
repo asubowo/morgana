@@ -120,9 +120,16 @@ module.exports = {
             
             embed.setTitle(station.toUpperCase());
             for (var i = 0; i < destination.length; i++) {
-              embed.addFields(
-                { name: getColor(line[i]) + ' ' + line[i] + ' ' + destination[i], value: min[i] }
-              )
+              if (min[i] === 'ARR') {
+                embed.addFields(
+                  { name: getColor(line[i]) + ' ' + line[i] + ' ' + destination[i], value: min[i] }
+                )
+              } else {
+                embed.addFields(
+                  { name: getColor(line[i]) + ' ' + line[i] + ' ' + destination[i], value: min[i] + ' minutes' }
+                )
+              }
+              
             }
             return interaction.editReply({ embeds: [embed] });
           }
@@ -133,8 +140,8 @@ module.exports = {
 }
 
 /**
- * 
- * @param {String} line The line
+ * Emoji color mapping
+ * @param {String} line The line to search for
  */
 function getColor(line) {
   const lineMap = new Map ([
