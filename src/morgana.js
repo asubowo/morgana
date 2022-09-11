@@ -6,8 +6,8 @@
  */
 require('dotenv').config({ path: '../.env' });
 
-const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.Guids, GatewayIntentBits.GuildVoiceStates] });
+const { Client, GatewayIntentBits, Collection, ActivityType, InteractionType } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 const fs = require('node:fs');
 const path = require('node:path');
 const stocks = require('./commands/utils/stocks.js');
@@ -53,7 +53,6 @@ client.on('messageCreate', async message => {
 client.on('interactionCreate', async interaction => {
 
     if (!interaction.isChatInputCommand()) return;
-
     // If the slash command isn't anything we know of at boot, ignore it
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
@@ -85,7 +84,7 @@ function containsStock(message) {
  * @param {String} msg The string to parse
  */
 function containsSubreddit(message) {
-    const regex = /[rR]\/[aA-zZ]*/gm;
+    const regex = /\b[rR]\/[aA-zZ]*\b/gm;
     const subreddits = message.match(regex);
 
     // Ignore if someone linked to reddit directly.
