@@ -3,7 +3,7 @@
  * @version 2.0 Introduced /metro commands to pull metro data from WMATA APIs
  */
 
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: '.env' });
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const https = require('https');
 const PRIMARY_API_KEY = process.env.WMATA_PRIMARY_KEY;

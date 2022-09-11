@@ -33,7 +33,7 @@ module.exports = {
     //const connection = getVoiceConnection(interaction.guildId);
     const sfx = interaction.options.getString('sfx');
     
-    let resource = createAudioResource('../assets/audio/' + sfx + '.mp3');
+    let resource = createAudioResource('./assets/audio/' + sfx + '.mp3');
 
     const player = createAudioPlayer( {
         behaviors: {
