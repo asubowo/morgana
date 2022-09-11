@@ -104,30 +104,40 @@ module.exports = {
           let destination = []
           let min = []
           let line = [];
+          let location = []
           for (var i = 0; i < res.Trains.length; i++) {
 
-            var regex = new RegExp('^.*\\b(' + station + ')\\b(?!(\\s+).)*$', 'gim')
-            if (stations[i].LocationName.toString().match(regex)) {  
+            //TODO: Get a better regex/search function
+            //station = station.replace('\'', '\\')
+            //var regex = new RegExp('^.*\\b(' + station + ')\\b(?!(\\s+).)*$', 'gim')
+            // Do lazy matching for now
+            if (stations[i].LocationName.toString().toLowerCase().includes(station.toLowerCase())) {  
               destination = [...destination, stations[i].Destination.toString()];
               min = [...min, stations[i].Min.toString()];
               line = [...line, stations[i].Line.toString()];
+              location = [...location, stations[i].LocationName.toString()];
             }
           }
 
           if (destination.length == 0) {
             return interaction.editReply({ content: 'No info was found for ' + station, ephemeral: true })
           } else {
-            
-            embed.setTitle(station.toUpperCase());
+            // return best match search
+            embed.setTitle(location[0].toUpperCase());
             for (var i = 0; i < destination.length; i++) {
               if (min[i] === 'ARR') {
                 embed.addFields(
                   { name: getColor(line[i]) + ' ' + line[i] + ' ' + destination[i], value: min[i] }
-                )
+                );
+              }
+              else if (min[i] === 'BRD') {
+                embed.addFields(
+                  { name: getColor(line[i]) + ' ' + line[i] + ' ' + destination[i], value: min[i] }
+                );
               } else {
                 embed.addFields(
                   { name: getColor(line[i]) + ' ' + line[i] + ' ' + destination[i], value: min[i] + ' minutes' }
-                )
+                );
               }
               
             }

@@ -84,7 +84,7 @@ function containsStock(message) {
  * @param {String} msg The string to parse
  */
 function containsSubreddit(message) {
-    const regex = /[rR]\/[aA-zZ]*/gm;
+    const regex = /\b[rR]\/[aA-zZ]*\b/gm;
     const subreddits = message.match(regex);
 
     // Ignore if someone linked to reddit directly.
