@@ -2,8 +2,9 @@ version: "3.8"
 
 services:
   morgana:
+    build: ./
     container_name: morgana
-    image: asubowo/morgana
+    image: asubowo/morgana:2.1
     restart: unless-stopped
     env_file: .env
     network_mode: bridge
