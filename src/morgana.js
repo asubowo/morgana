@@ -45,7 +45,7 @@ client.once('ready', function () {
 client.on('messageCreate', async message => {
 
     // Check if we're in the targeted chatgpt channel
-    if ((!message.author.bot) && (message.channel.id == process.env.CHATGTP_CHANNEL)) {
+    if (!message.author.bot && message.channel.id == process.env.CHATGPT_CHANNEL) {
         chatgptinator.chatgpt(message, openAI);
     }
 

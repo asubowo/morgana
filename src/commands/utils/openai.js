@@ -21,8 +21,7 @@ var chatgpt = function(messageContext, openai) {
             prevMessages.reverse();
 
             prevMessages.forEach((msg) => {
-                if (msg.author.id !== client.user.id && message.author.bot) return;
-                if (msg.author.id !== message.author.id) return;
+                if (msg.author.bot || msg.author.id !== messageContext.author.id) return;
 
                 conversationHistory.push({
                 role: 'user',
@@ -33,7 +32,7 @@ var chatgpt = function(messageContext, openai) {
             const result = await openai
                 .createChatCompletion({
                 model: 'gpt-3.5-turbo',
-                messages: conversationLog,
+                messages: conversationHistory,
                 // max_tokens: 256, // limit token usage
                 })
                 .catch((error) => {
