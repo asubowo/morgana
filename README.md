@@ -2,6 +2,9 @@
 A Discord bot written in NodeJS to automatically dispense serotonin wherever deployed!
 
 # Features
+### OpenAI/ChatGPT integration
+Morgana will talk back to you in a dedicated channel you specify.
+
 ### Subreddit relinker
 This bot will automatically relink mentions of `'/r/<subreddit>'`, `'r/<subreddit>'` to reddit. It doesn't do any fancy subreddit loading or whatnot, just dropping the subreddit into a hotlink for users to click on.
 
