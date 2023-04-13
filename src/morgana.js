@@ -8,10 +8,14 @@ require('dotenv').config({ path: '.env' });
 
 const { Client, GatewayIntentBits, Collection, ActivityType, InteractionType } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
+
+const { Configuration, OpenAIApi } = require('openai');
+
 const fs = require('node:fs');
 const path = require('node:path');
 const stocks = require('./commands/utils/stocks.js');
 const sublinker = require('./commands/reddit/sublinker.js');
+const chatgptinator = require('./commands/utils/openai.js');
 
 
 client.commands = new Collection();
@@ -24,6 +28,11 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
+// OpenAI init
+const configuration = new Configuration({
+    apiKey: process.env.CHATGPT_API_KEY,
+});
+const openAI = new OpenAIApi(configuration);
 
 client.once('ready', function () {
     console.log('bot initialized');
@@ -34,6 +43,11 @@ client.once('ready', function () {
 
 // Intercept regular messages for stock and subreddit hotlinking
 client.on('messageCreate', async message => {
+
+    // Check if we're in the targeted chatgpt channel
+    if (!message.author.bot && message.channel.id == process.env.CHATGPT_CHANNEL) {
+        chatgptinator.chatgpt(message, openAI);
+    }
 
     // Don't handle anything from a bot
     if (!message.author.bot) {
