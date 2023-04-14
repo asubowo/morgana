@@ -1,3 +1,4 @@
+[![Docker Image CI](https://github.com/asubowo/morgana/actions/workflows/docker-image.yml/badge.svg?branch=master)](https://github.com/asubowo/morgana/actions/workflows/docker-image.yml)
 # Morgana
 A Discord bot written in NodeJS to automatically dispense serotonin wherever deployed!
 
