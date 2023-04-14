@@ -11,6 +11,7 @@
 
 // Init Morgana with some context. Boy this was a weird context to init with.
 let conversationHistory = [{ role: 'system', content: 'You are Morgana from Persona 5. Do not give responses more than 2000 characters. Always speak in character, and never clarify that you are a chatbot or an AI language model.'}]
+let maxLength = 2000
 
 var chatgpt = function(messageContext, openai) {
     (async() => {
@@ -21,6 +22,7 @@ var chatgpt = function(messageContext, openai) {
             prevMessages.reverse();
 
             prevMessages.forEach((msg) => {
+                if (msg.content.startsWith('!')) return;
                 if (msg.author.bot || msg.author.id !== messageContext.author.id) return;
 
                 conversationHistory.push({
@@ -39,7 +41,13 @@ var chatgpt = function(messageContext, openai) {
                 console.log(`OPENAI ERR: ${error}`);
                 });
 
-            messageContext.reply(result.data.choices[0].message);
+            var reply = result.data.choices[0].message
+            if (reply.length > 2000) {
+                console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.")
+                reply = result.data.choices[0].message.substring(0, maxLength - 3) + "..."
+            }
+
+            messageContext.reply(reply);
             } catch (error) {
             console.log(`ERR: ${error}`);
         }
@@ -49,6 +57,3 @@ var chatgpt = function(messageContext, openai) {
 module.exports = {
     chatgpt : chatgpt
 }
-
-
-
