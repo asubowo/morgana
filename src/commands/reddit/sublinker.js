@@ -7,7 +7,7 @@
  * 
  */
 async function sublinker(messageContext) {
-  const regex = /([^aA-zZ\s\/]|\b)[rR]\/\w+/gm;
+  const regex = /([^a-z\s\/]|\b)[rR]\/\w+/gm;
   const subreddits = messageContext.content.match(regex);
   return await messageContext.channel.send('https://www.reddit.com/' + subreddits[0].toLowerCase());
 }
