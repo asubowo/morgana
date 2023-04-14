@@ -84,7 +84,7 @@ client.on('interactionCreate', async interaction => {
  * @param {String} message The message content
  */
 function containsStock(message) {
-    let regex = /\$([aA-zZ])\w{0,4}\b/gim;
+    let regex = /\$([A-Z])\w{0,4}\b/gim;
 
     if (message.match(regex)) {
         return true
@@ -98,7 +98,7 @@ function containsStock(message) {
  * @param {String} msg The string to parse
  */
 function containsSubreddit(message) {
-    const regex = /\b[rR]\/[aA-zZ]*\b/gm;
+    const regex = /\b[rR]\/[a-z]*\b/gm;
     const subreddits = message.match(regex);
 
     // Ignore if someone linked to reddit directly.

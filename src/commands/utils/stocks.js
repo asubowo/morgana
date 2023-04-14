@@ -12,7 +12,7 @@ const { EmbedBuilder } = require('discord.js');
  * @param {Interaction} messageContext 
  */
 var getStonks = function(messageContext) {
-    var regex = /\$([aA-zZ])\w{0,4}\b/gim;
+    var regex = /\$([A-Z])\w{0,4}\b/gim;
     var stock = messageContext.content.match(regex);
     
     for (var index = 0; index < stock.length; index++) {
