@@ -3,14 +3,13 @@ FROM node:16
 USER root
 
 # Bundle app source
+WORKDIR /apps/node/morgana/src
+COPY ./src/package.json .
+RUN npm install
+
 WORKDIR /apps/node/morgana
 COPY . .
-
-# Install app dependencies
-WORKDIR /apps/node/morgana/src
-RUN npm install
 RUN npm update
 
-WORKDIR /apps/node/morgana
 ENTRYPOINT [ "node", "src/morgana.js" ]
 
