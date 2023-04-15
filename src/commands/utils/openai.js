@@ -42,7 +42,7 @@ var chatgpt = function(messageContext, openai) {
                 });
 
             var reply = result.data.choices[0].message
-            if (reply.length > 2000) {
+            if (reply.content.length > 2000) {
                 console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.")
                 reply = result.data.choices[0].message.substring(0, maxLength - 3) + "..."
             }
