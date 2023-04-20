@@ -46,7 +46,7 @@ client.on('messageCreate', async message => {
 
     // Check if we're in the targeted chatgpt channel
     if (!message.author.bot && message.channel.id == process.env.CHATGPT_CHANNEL && !message.content.startsWith('!')) {
-        chatgptinator.chatgpt(message, openAI);
+        chatgptinator.chatgpt(message, openAI, client);
     }
 
     // Don't handle anything from a bot
@@ -75,7 +75,7 @@ client.on('interactionCreate', async interaction => {
         await command.execute(interaction);
     } catch (error) {
         console.error(error);
-        await interaction.reply({ content: "Try again next time", ephemeral: true })
+        await interaction.reply({ content: "Try again next time", ephemeral: true });
     }
 });
 
@@ -87,9 +87,9 @@ function containsStock(message) {
     let regex = /\$([A-Z])\w{0,4}\b/gim;
 
     if (message.match(regex)) {
-        return true
+        return true;
     } else {
-        return false
+        return false;
     }
 }
 
