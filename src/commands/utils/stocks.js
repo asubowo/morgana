@@ -39,15 +39,15 @@ var getStonks = function(messageContext) {
                 const { regularMarketPrice, shortName, symbol, regularMarketChangePercent } = quote;
                 
                 if ( shortName == undefined ) {
-                    shortNames = [...shortNames, symbol]
+                    shortNames = [...shortNames, symbol];
                 } else {
-                    shortNames = [...shortNames, shortName]
+                    shortNames = [...shortNames, shortName];
                 }
 
                 if ( regularMarketPrice == undefined) {
-                    marketPrices = [...marketPrices, 'Delayed quote or unknown stock']
+                    marketPrices = [...marketPrices, 'Delayed quote or unknown stock'];
                 } else {
-                    marketPrices = [...marketPrices, regularMarketPrice]
+                    marketPrices = [...marketPrices, regularMarketPrice];
                 }  
 
                 embed.addFields(
@@ -60,7 +60,7 @@ var getStonks = function(messageContext) {
             return await messageContext.channel.send( { embeds: [ embed ]});
 
         } catch (err) {
-            console.log(err)
+            console.log(err);
             console.log(err.message);
             return
         }
