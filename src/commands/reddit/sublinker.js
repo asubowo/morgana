@@ -3,8 +3,12 @@
  * @since 2.0
  */
 
+const { Message } = require('discord.js');
+
 /**
- * 
+ * Given a Discord message, determine if a subreddit is present and return a simple URL
+ * @param {Message} messageContext 
+ * @returns A message to the channel with a URL to the subreddit
  */
 async function sublinker(messageContext) {
   const regex = /([^a-z\s\/]|\b)[rR]\/\w+/gm;
