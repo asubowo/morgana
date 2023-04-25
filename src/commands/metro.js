@@ -4,7 +4,7 @@
  */
 
 require('dotenv').config({ path: '.env' });
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, CommandInteraction } = require('discord.js');
 const https = require('https');
 const PRIMARY_API_KEY = process.env.WMATA_PRIMARY_KEY;
 
@@ -22,10 +22,12 @@ module.exports = {
         .setName('status')
         .setDescription('Get rail service statuses from WMATA.')),
 
-
+  /**
+   * 
+   * @param {CommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: false });
-
     let subcommand = interaction.options.getSubcommand();
 
     if (subcommand === 'status') {

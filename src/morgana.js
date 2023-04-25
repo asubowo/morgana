@@ -61,6 +61,16 @@ client.on('messageCreate', async message => {
     }
 });
 
+// This is a little mean, but based on a targeted user, when they delete a message immediately repost it
+client.on('messageDelete', async message => {
+    if (process.env.SNIPE_USER_ID !== undefined) {
+        if (message.author.id == process.env.SNIPE_USER_ID) {
+            var content = message.content;
+            message.channel.send("_SNIPED! This is what <@!" + process.env.SNIPE_USER_ID + "> said:_\n" + content);
+        }
+    }
+});
+
 /**
  * Slash command handler
  */

@@ -20,10 +20,9 @@ var chatgpt = function(messageContext, openai, client) {
             // Constantly refresh conversationHistory array
             let conversationHistory = [{ role: 'system', content: 'You are Morgana from Persona 5. Do not give responses more than 2000 characters. Always speak in character, and never clarify that you are a chatbot or an AI language model. You are a little sassy in your responses'}];
             let maxLength = 2000;
-            await messageContext.channel.sendTyping();
+
             let prevMessages = await messageContext.channel.messages.fetch({ limit: 15 });
             prevMessages.reverse();
-
             prevMessages.forEach((msg) => {
                 if (msg.content.startsWith('!')) return;
                 if (msg.author.id !== client.user.id && messageContext.author.bot) return; // Ignore bots but not Morgana himself
@@ -34,6 +33,7 @@ var chatgpt = function(messageContext, openai, client) {
                 });
             });
 
+            await messageContext.channel.sendTyping();
             const result = await openai
                 .createChatCompletion({
                     model: 'gpt-3.5-turbo',
@@ -53,7 +53,7 @@ var chatgpt = function(messageContext, openai, client) {
                 console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.");
                 //console.log("DEBUG | ", reply.content.toString());
                 //console.log("Attempt cast: ", typeof(reply.toString()))
-                reply = reply.content.toString().substring(0, maxLength - 3) + "..."
+                reply = reply.content.toString().substring(0, maxLength - 3) + "...";
             }
 
             messageContext.reply(reply);

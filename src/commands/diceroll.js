@@ -5,7 +5,7 @@
  */
 
 
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, CommandInteraction } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,6 +14,12 @@ module.exports = {
     .addStringOption(option => option.setName('roll')
       .setDescription('Dice roll syntax: d20, 3d10+1')
       .setRequired(true)),
+  
+  /**
+   * 
+   * @param {CommandInteraction} interaction 
+   * @returns A Discord Embed holding the result
+   */
   async execute(interaction) {
     
     // Get the dice roll syntax

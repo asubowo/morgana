@@ -5,11 +5,11 @@
  */
 
 const yahooFinance = require('yahoo-finance2').default;
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, Message } = require('discord.js');
 
 /**
  * 
- * @param {Interaction} messageContext 
+ * @param {Message} messageContext 
  */
 var getStonks = function(messageContext) {
     var regex = /\$([A-Z])\w{0,4}\b/gim;

@@ -4,13 +4,19 @@
  * Now supports slash commands!
  */
 
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, CommandInteraction} = require('discord.js');
 const test = require('speedtest-net');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('speedtest')
     .setDescription('Runs a speedtest where Morgana is being ran from'),
+
+    /**
+     * 
+     * @param {CommandInteraction} interaction 
+     * @returns An embed representing the data of the speedtest
+     */
     async execute(interaction) {
       await interaction.deferReply({ ephemeral: false});
 

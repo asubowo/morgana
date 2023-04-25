@@ -4,7 +4,7 @@
  * Now supports slash commands!
  */
 
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, CommandInteraction } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus, AudioPlayerStatus, generateDependencyReport, NoSubscriberBehavior } = require('@discordjs/voice');
 
 module.exports = {
@@ -18,6 +18,11 @@ module.exports = {
         { name: 'Ghost', value: 'ghost' }
       )),
 
+  /**
+   * 
+   * @param {CommandInteraction} interaction 
+   * @returns 
+   */
   async execute(interaction) {
     const channel = interaction.member.voice.channelId;
 
