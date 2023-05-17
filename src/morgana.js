@@ -1,12 +1,12 @@
 /**
  * @author Andrew Subowo
- * @version 2.0
+ * @version 2.1
  * Now supports slash commands!
  * Knowledge of NodeJS UP!!!!
  */
 require('dotenv').config({ path: '.env' });
 
-const { Client, GatewayIntentBits, Collection, ActivityType, InteractionType } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 
 const { Configuration, OpenAIApi } = require('openai');

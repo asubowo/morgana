@@ -8,7 +8,7 @@ const { Client, Message } = require("discord.js");
 const { OpenAIApi } = require("openai");
 
 /**
- * 
+ * Hit up OpenAI's API and await response.
  * @param {Message} messageContext The Discord message context
  * @param {OpenAIApi} openai The openai instance
  * @param {Client} client The Discord bot client instance
@@ -51,17 +51,62 @@ var chatgpt = function(messageContext, openai, client) {
             var reply = result.data.choices[0].message;
             if (reply.content.length > 2000) {
                 console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.");
-                //console.log("DEBUG | ", reply.content.toString());
-                //console.log("Attempt cast: ", typeof(reply.toString()))
-                reply = reply.content.toString().substring(0, maxLength - 3) + "...";
-            }
 
-            messageContext.reply(reply);
+                const messageChunks = splitMessage(reply.content.toString(), 2000);
+
+                for (chunk of messageChunks) {
+                    await messageContext.channel.sendTyping();
+                    messageContext.channel.send(chunk);
+                }
+                // reply = reply.content.toString().substring(0, maxLength - 3) + "...";
+            } else {
+                messageContext.reply(reply);
+            }
             } catch (error) {
-            console.log(`ERR: ${error}`);
+            console.error(`ERR: ${error}`);
         }
     })();
 }
+
+/**
+ * We'd like to be able to give responses more than 2000 characters if we need.
+ * This function returns an array containing chunks of words. This array essentially represents how
+ *    many follow up messages we send back to Discord.
+ * @param {String} inputString The string to be cut into chunks
+ * @param {Integer} maxLength The max character length (dynamic, of course and not hardcoded to Discords 2k limit)
+ * @returns 
+ */
+function splitMessage(inputString, maxLength) {
+    // Check if the input string is already within the character limit
+    if (inputString.length <= maxLength) {
+      return [inputString];
+    }
+  
+    const words = inputString.split(" ");
+    const chunks = [];
+    let currentChunk = ""; // currentChunk represents a chunk of words
+  
+    // This is weird, but iterate through the entire response split by spaces
+    for (const word of words) {
+      // Given our current chunk, see if adding the word "including a space" would go over our character limit
+      if (currentChunk.length + word.length + 1 <= maxLength) { // +1 for space character
+        if (currentChunk !== "") {
+          currentChunk += " ";
+        }
+        currentChunk += word; // Add word to current chunk we're on
+      } else {
+        chunks.push(currentChunk); // If we'd go over the character limit, stop, and create a new chunk
+        currentChunk = word;
+      }
+    }
+  
+    // Add last remaining chunk to array
+    if (currentChunk !== "") {
+      chunks.push(currentChunk);
+    }
+  
+    return chunks;
+  }
 
 module.exports = {
     chatgpt : chatgpt
