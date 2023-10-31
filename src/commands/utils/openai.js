@@ -14,58 +14,89 @@ const { OpenAIApi } = require("openai");
  * @param {Client} client The Discord bot client instance
  */
 var chatgpt = function(messageContext, openai, client) {
-    (async() => {
-        try {
-            // Init Morgana with some context. Boy this was a weird context to init with.
-            // Constantly refresh conversationHistory array
-            let conversationHistory = [{ role: 'system', content: 'You are Morgana from Persona 5. Do not give responses more than 2000 characters. Always speak in character, and never clarify that you are a chatbot or an AI language model. You are a little sassy in your responses'}];
-            let maxLength = 2000;
+  (async() => {
+    try {
+      // Init Morgana with some context. Boy this was a weird context to init with.
+      // Constantly refresh conversationHistory array
+      let context = {
+        role: "system",
+        content: "Follow these instructions: 1) You are Morgana from Persona 5. You will always speak in character, and never break character. 2) If you need to, do so in character. 3) You are a bit sassy in your responses. 4) There are multiple people in this chatroom, identified by username."
+      }
 
-            let prevMessages = await messageContext.channel.messages.fetch({ limit: 15 });
-            prevMessages.reverse();
-            prevMessages.forEach((msg) => {
-                if (msg.content.startsWith('!')) return;
-                if (msg.author.id !== client.user.id && messageContext.author.bot) return; // Ignore bots but not Morgana himself
+      let conversationHistory = [context];
+      let maxLength = 2000; // The current max character length of a Discord message
 
-                conversationHistory.push({
-                    role: 'user',
-                    content: msg.content, //convert to string and trim whitespace at end for stability
-                });
-            });
+      let prevMessages = await messageContext.channel.messages.fetch({ limit: 15 });
+      prevMessages.reverse();
+      prevMessages.forEach((msg) => {
+        // Thanks Under Ctrl for the regex.
+        const username = msg.author.username.replace(/\s+/g, '_').replace(/[^\w\s]/gi, '');
 
-            await messageContext.channel.sendTyping();
-            const result = await openai
-                .createChatCompletion({
-                    model: 'gpt-3.5-turbo',
-                    messages: conversationHistory,
-                // max_tokens: 256, // limit token usage
-                })
-                .catch((error) => {
-                    console.log(`OPENAI ERR: ${error}`);
-                    console.log("Chat history:");
-                    conversationHistory.forEach((msg) => {
-                        console.log(msg.content)
-                    })
-                });
-
-            var reply = result.data.choices[0].message;
-            if (reply.content.length > 2000) {
-                console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.");
-
-                const messageChunks = splitMessage(reply.content.toString(), 2000);
-
-                for (chunk of messageChunks) {
-                    await messageContext.channel.sendTyping();
-                    messageContext.channel.send(chunk);
-                }
-                // reply = reply.content.toString().substring(0, maxLength - 3) + "...";
-            } else {
-                messageContext.reply(reply);
-            }
-            } catch (error) {
-            console.error(`ERR: ${error}`);
+        if (msg.content.startsWith('!')) return;
+        if (msg.author.id !== client.user.id && msg.author.bot) return; // Ignore bots but not Morgana himself
+        if (msg.author.id == client.user.id) {
+          conversationHistory.push({
+            role: 'assistant',
+            name: username,
+            content: msg.content
+          });
+          return;
         }
-    })();
+          
+        // Give Morgana context as to who is speaking what
+        conversationHistory.push({
+          role: 'user',
+          name: username,
+          content: msg.content,
+        });
+      });
+
+      // Push context again
+      conversationHistory.push(context);
+
+      // Send init typing context
+      await messageContext.channel.sendTyping();
+
+      // Keep "typing" while API hasn't responded yet
+      const typingStatus = setInterval(() => {
+        messageContext.channel.sendTyping();
+      }, 5000);
+
+      const result = await openai
+        .createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          messages: conversationHistory,
+            // max_tokens: 256, // limit token usage
+        })
+        .catch((error) => {
+          console.log(`OPENAI ERR: ${error}`);
+          console.log("Chat history:");
+          conversationHistory.forEach((msg) => {
+            console.log(msg.content)
+          })
+        });
+
+      // Do message chunking, since Discord max length is more than 2000 characters.
+      // We don't use the reply function here on purpose.
+      var reply = result.data.choices[0].message;
+      if (reply.content.length > maxLength) {
+        console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.");
+
+        const messageChunks = splitMessage(reply.content.toString(), 2000);
+        for (chunk of messageChunks) {
+          await messageContext.channel.sendTyping();
+          messageContext.channel.send(chunk);
+        }
+        clearInterval(typingStatus);
+            
+      } else {
+        clearInterval(typingStatus);
+        messageContext.reply(reply);
+      }
+    } catch (error) {
+      console.error(`ERR: ${error}`);
+    }
+  })();
 }
 
 /**
@@ -77,36 +108,36 @@ var chatgpt = function(messageContext, openai, client) {
  * @returns 
  */
 function splitMessage(inputString, maxLength) {
-    // Check if the input string is already within the character limit
-    if (inputString.length <= maxLength) {
-      return [inputString];
-    }
-  
-    const words = inputString.split(" ");
-    const chunks = [];
-    let currentChunk = ""; // currentChunk represents a chunk of words
-  
-    // This is weird, but iterate through the entire response split by spaces
-    for (const word of words) {
-      // Given our current chunk, see if adding the word "including a space" would go over our character limit
-      if (currentChunk.length + word.length + 1 <= maxLength) { // +1 for space character
-        if (currentChunk !== "") {
-          currentChunk += " ";
-        }
-        currentChunk += word; // Add word to current chunk we're on
-      } else {
-        chunks.push(currentChunk); // If we'd go over the character limit, stop, and create a new chunk
-        currentChunk = word;
-      }
-    }
-  
-    // Add last remaining chunk to array
-    if (currentChunk !== "") {
-      chunks.push(currentChunk);
-    }
-  
-    return chunks;
+  // Check if the input string is already within the character limit
+  if (inputString.length <= maxLength) {
+    return [inputString];
   }
+
+  const words = inputString.split(" ");
+  const chunks = [];
+  let currentChunk = ""; // currentChunk represents a chunk of words
+
+  // This is weird, but iterate through the entire response split by spaces
+  for (const word of words) {
+    // Given our current chunk, see if adding the word "including a space" would go over our character limit
+    if (currentChunk.length + word.length + 1 <= maxLength) { // +1 for space character
+      if (currentChunk !== "") {
+        currentChunk += " ";
+      }
+      currentChunk += word; // Add word to current chunk we're on
+    } else {
+      chunks.push(currentChunk); // If we'd go over the character limit, stop, and create a new chunk
+      currentChunk = word;
+    }
+  }
+
+  // Add last remaining chunk to array
+  if (currentChunk !== "") {
+    chunks.push(currentChunk);
+  }
+
+  return chunks;
+}
 
 module.exports = {
     chatgpt : chatgpt

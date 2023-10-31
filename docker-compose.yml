@@ -4,7 +4,7 @@ services:
   morgana:
     build: ./
     container_name: morgana
-    image: asubowo/morgana:2.1
+    image: asubowo/morgana:2.2
     restart: unless-stopped
     env_file: .env
     network_mode: bridge
