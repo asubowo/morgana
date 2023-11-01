@@ -23,5 +23,4 @@ WORKDIR /apps/node/morgana
 COPY --chown=node:node --from=builder /apps/node/morgana/src/node_modules ./src/node_modules
 COPY --chown=node:node ./src ./src/
 COPY --chown=node:node ./assets ./assets/
-COPY --chown=node:node ./.env ./
 ENTRYPOINT [ "node", "src/morgana.js" ]
