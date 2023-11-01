@@ -1,15 +1,27 @@
-FROM node:16
+FROM node:16 AS base
 
-USER root
-
-# Bundle app source
-VOLUME [ "/apps/node/morgana/src" ]
+USER node
 WORKDIR /apps/node/morgana/src
-COPY ./src/package.json .
-RUN npm install
+VOLUME [ "/apps/node/morgana/src" ]
+RUN chown -R node:node /apps/node/morgana/src
 
+FROM base AS builder
+# Run 'docker image prune --filter label=stage=build' to remove this dangling image
+LABEL stage=build
+USER node
+WORKDIR /apps/node/morgana/src
+COPY --chown=node:node ./src/package.json .
+COPY --chown=node:node ./src/package-lock.json .
+RUN npm ci
+
+# .dockerignore ignores node_modules on host system, so pull it from builder stage
+FROM base AS production
+USER node
 WORKDIR /apps/node/morgana
-COPY . .
-RUN npm update
-
+# Only copy what we need
+# Copy from relative path xxxx/src into container
+COPY --chown=node:node --from=builder /apps/node/morgana/src/node_modules ./src/node_modules
+COPY --chown=node:node ./src ./src/
+COPY --chown=node:node ./assets ./assets/
+COPY --chown=node:node ./.env ./
 ENTRYPOINT [ "node", "src/morgana.js" ]
