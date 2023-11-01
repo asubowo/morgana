@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
   morgana:
-    build: ./
+    build:
+      context: .
+      target: production
     container_name: morgana
     image: asubowo/morgana:2.2
     restart: unless-stopped

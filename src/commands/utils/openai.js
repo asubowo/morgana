@@ -1,6 +1,6 @@
 /**
  * @author Andrew Subowo
- * @version 2.1
+ * @version 2.2
  * Now includes more AI - reticulating splines.
  */
 
@@ -20,7 +20,7 @@ var chatgpt = function(messageContext, openai, client) {
       // Constantly refresh conversationHistory array
       let context = {
         role: "system",
-        content: "Follow these instructions: 1) You are Morgana from Persona 5. You will always speak in character, and never break character. 2) If you need to, do so in character. 3) You are a bit sassy in your responses. 4) There are multiple people in this chatroom, identified by username."
+        content: "Follow these instructions: 1) You are Morgana from Persona 5. You will always speak in character, and never break character. 2) If you need to, do so in character. 3) You are a bit casual and sassy in your responses. Don't start your responses with 'Ah' all the time, mix it up."
       }
 
       let conversationHistory = [context];
@@ -31,9 +31,9 @@ var chatgpt = function(messageContext, openai, client) {
       prevMessages.forEach((msg) => {
         // Thanks Under Ctrl for the regex.
         const username = msg.author.username.replace(/\s+/g, '_').replace(/[^\w\s]/gi, '');
-
-        if (msg.content.startsWith('!')) return;
+        if (msg.content.startsWith('!')) return; // Ignore messages that start with '!'
         if (msg.author.id !== client.user.id && msg.author.bot) return; // Ignore bots but not Morgana himself
+        // Constantly base our responses off of past responses
         if (msg.author.id == client.user.id) {
           conversationHistory.push({
             role: 'assistant',
@@ -62,8 +62,7 @@ var chatgpt = function(messageContext, openai, client) {
         messageContext.channel.sendTyping();
       }, 5000);
 
-      const result = await openai
-        .createChatCompletion({
+      const result = await openai.chat.completions.create({
           model: 'gpt-3.5-turbo',
           messages: conversationHistory,
             // max_tokens: 256, // limit token usage
@@ -78,7 +77,7 @@ var chatgpt = function(messageContext, openai, client) {
 
       // Do message chunking, since Discord max length is more than 2000 characters.
       // We don't use the reply function here on purpose.
-      var reply = result.data.choices[0].message;
+      var reply = result.choices[0].message;
       if (reply.content.length > maxLength) {
         console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.");
 

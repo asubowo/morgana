@@ -9,7 +9,7 @@ require('dotenv').config({ path: '.env' });
 const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -29,10 +29,9 @@ for (const file of commandFiles) {
 }
 
 // OpenAI init
-const configuration = new Configuration({
+const openAI = new OpenAI({
     apiKey: process.env.CHATGPT_API_KEY,
 });
-const openAI = new OpenAIApi(configuration);
 
 client.once('ready', function () {
     console.log('bot initialized');
