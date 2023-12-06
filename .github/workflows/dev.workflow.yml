@@ -23,10 +23,14 @@ jobs:
         VER=$(cat VERSION)
         echo VERSION=$VER >> $GITHUB_ENV
 
-    - name: Run build
-      run: |
-        docker build . -t ${{ secrets.DOCKER_USERNAME }}/morgana:rc-${{ env.VERSION }} .
-
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/morgana:rc-${{ env.VERSION }}
+  
     - name: Check if container boots
       run: | 
         docker run --rm ${{ secrets.DOCKER_USERNAME }}/morgana:rc-${{ env.VERSION }} || exit 0
@@ -39,8 +43,3 @@ jobs:
           echo "Release candidate did NOT boot cleanly"
           exit 1
         fi
-    
-    - name: Push Docker image
-      run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/morgana:rc-${{ env.VERSION }}
-        
