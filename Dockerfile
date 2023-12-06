@@ -1,8 +1,7 @@
-FROM node:16 AS base
+FROM node:17 AS base
 
 USER node
 WORKDIR /apps/node/morgana/src
-VOLUME [ "/apps/node/morgana/src" ]
 RUN chown -R node:node /apps/node/morgana/src
 
 FROM base AS builder
