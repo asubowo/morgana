@@ -6,7 +6,7 @@ services:
       context: .
       target: production
     container_name: morgana
-    image: asubowo/morgana:3.0
+    image: asubowo/morgana:3.1
     restart: unless-stopped
     env_file: .env
     network_mode: bridge
