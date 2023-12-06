@@ -31,15 +31,3 @@ jobs:
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/morgana:rc-${{ env.VERSION }}
   
-    - name: Check if container boots
-      run: | 
-        docker run --rm ${{ secrets.DOCKER_USERNAME }}/morgana:rc-${{ env.VERSION }} || exit 0
-
-    - name: Check application status
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Release candidate booted cleanly"
-        else
-          echo "Release candidate did NOT boot cleanly"
-          exit 1
-        fi
