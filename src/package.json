@@ -14,7 +14,6 @@
     "libsodium-wrappers": "^0.7.13",
     "openai": "^4.20.1",
     "opusscript": "^0.1.1",
-    "speedtest-net": "^2.2.0",
     "yahoo-finance2": "^2.9.0"
   },
   "scripts": {
