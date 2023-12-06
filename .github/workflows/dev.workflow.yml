@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "rc" ]
+    branches: [ "rc-*" ]
   pull_request:
-    branches: [ "rc" ]
+    branches: [ "rc-*" ]
 
 jobs:
   build_and_push:
