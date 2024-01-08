@@ -28,5 +28,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ secrets.DOCKER_USERNAME }}/morgana:${{ vars.GITHUB_REF_NAME }}
+          ${{ secrets.DOCKER_USERNAME }}/morgana:${{ github.ref_name }}
   
