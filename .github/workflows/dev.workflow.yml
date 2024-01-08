@@ -3,8 +3,6 @@ name: Release Candidate Build Runner
 on:
   push:
     branches: [ "rc-*" ]
-  pull_request:
-    branches: [ "rc-*" ]
 
 jobs:
   build_and_push:
@@ -29,5 +27,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ secrets.DOCKER_USERNAME }}/morgana:rc-${{ env.VERSION }}
+          ${{ secrets.DOCKER_USERNAME }}/morgana:${GITHUB_REF##*/}
   
