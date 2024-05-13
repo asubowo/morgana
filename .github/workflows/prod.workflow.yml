@@ -3,8 +3,6 @@ name: Production Image Builder
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
   build_and_push:
@@ -30,4 +28,4 @@ jobs:
         push: true
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/morgana:latest
-          ${{ secrets.DOCKER_USERNAME }}/morgana:${{ env.VERSION }}
+          ${{ secrets.DOCKER_USERNAME }}/morgana:${{ github.ref_name }}

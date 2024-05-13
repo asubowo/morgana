@@ -1,4 +1,4 @@
-FROM node:17 AS base
+FROM node:18 AS base
 
 USER node
 WORKDIR /apps/node/morgana/src
