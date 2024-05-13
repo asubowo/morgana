@@ -25,7 +25,7 @@ var getStonks = function(messageContext) {
 
         try {
             const embed = new EmbedBuilder()
-            .setColor( randomColor() )
+            .setColor('Random')
             .setTitle('TO THE MOON! 🚀🚀🚀')
             .setTimestamp()
             .addFields( { name: 'Stock', value:'\u200b', inline: true }, { name: 'Market Prices', value:'\u200b', inline: true }, { name: '\u200b', value: '\u200b', inline: true } );
@@ -74,14 +74,6 @@ var getStonks = function(messageContext) {
  */
 function percentRound(num) {
     return Number.parseFloat(num).toFixed(2);
-}
-
-/**
- * Generates and returns a random hex color
- * @returns A random HEX color
- */
-function randomColor() {
-    return "#" + Math.floor(Math.random()*16777215).toString(16);
 }
 
 module.exports = {
