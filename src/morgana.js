@@ -1,8 +1,6 @@
 /**
  * @author Andrew Subowo
- * @version 2.1
- * Now supports slash commands!
- * Knowledge of NodeJS UP!!!!
+ * @version 3.2
  */
 require('dotenv').config({ path: '.env' });
 
@@ -16,7 +14,7 @@ const path = require('node:path');
 const stocks = require('./commands/utils/stocks.js');
 const sublinker = require('./commands/reddit/sublinker.js');
 const chatgptinator = require('./commands/utils/openai.js');
-
+const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -43,9 +41,16 @@ client.once('ready', function () {
 // Intercept regular messages for stock and subreddit hotlinking
 client.on('messageCreate', async message => {
 
-    // Check if we're in the targeted chatgpt channel
-    if (!message.author.bot && message.channel.id == process.env.CHATGPT_CHANNEL && !message.content.startsWith('!')) {
-        chatgptinator.chatgpt(message, openAI, client);
+    if (!respondAnywhere) {
+        //Check if we're in the targeted chatgpt channel
+        if (!message.author.bot && message.channel.id == process.env.CHATGPT_CHANNEL && !message.content.startsWith('!')) {
+            chatgptinator.chatgpt(message, openAI, client);
+        }
+    } else {
+        // Make morgana able to respond in any channel when summoned by mentioning him by name first in the message
+        if (!message.author.bot && !message.content.startsWith('!') && (message.content.startsWith('Morgana') || message.content.startsWith('morgana'))) {
+            chatgptinator.chatgpt(message, openAI, client);
+        }
     }
 
     // Don't handle anything from a bot

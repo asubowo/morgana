@@ -63,7 +63,7 @@ var chatgpt = function(messageContext, openai, client) {
       }, 5000);
 
       const result = await openai.chat.completions.create({
-          model: 'gpt-3.5-turbo',
+          model: 'gpt-4.1-nano',
           messages: conversationHistory,
             // max_tokens: 256, // limit token usage
         })
