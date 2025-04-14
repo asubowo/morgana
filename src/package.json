@@ -14,7 +14,7 @@
     "libsodium-wrappers": "^0.7.13",
     "openai": "^4.94.0",
     "opusscript": "^0.1.1",
-    "yahoo-finance2": "^2.13.3"
+    "yahoo-finance2": "^3.1.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
