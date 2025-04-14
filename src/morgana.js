@@ -1,6 +1,6 @@
 /**
  * @author Andrew Subowo
- * @version 3.2
+ * @version 3.1
  */
 require('dotenv').config({ path: '.env' });
 
@@ -47,8 +47,8 @@ client.on('messageCreate', async message => {
             chatgptinator.chatgpt(message, openAI, client);
         }
     } else {
-        // Make morgana able to respond in any channel when summoned by mentioning him by name first in the message
-        if (!message.author.bot && !message.content.startsWith('!') && (message.content.startsWith('Morgana') || message.content.startsWith('morgana'))) {
+        // Make morgana respond only if he's mentioned
+        if (!message.author.bot && !message.content.startsWith('!') && (message.mentions.members.has(client.user.id))) {
             chatgptinator.chatgpt(message, openAI, client);
         }
     }
