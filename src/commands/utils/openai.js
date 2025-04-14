@@ -5,12 +5,12 @@
  */
 
 const { Client, Message } = require("discord.js");
-const { OpenAIApi } = require("openai");
+const { OpenAI } = require("openai");
 
 /**
  * Hit up OpenAI's API and await response.
  * @param {Message} messageContext The Discord message context
- * @param {OpenAIApi} openai The openai instance
+ * @param {OpenAI} openai The openai instance
  * @param {Client} client The Discord bot client instance
  */
 var chatgpt = function(messageContext, openai, client) {
@@ -19,8 +19,8 @@ var chatgpt = function(messageContext, openai, client) {
       // Init Morgana with some context. Boy this was a weird context to init with.
       // Constantly refresh conversationHistory array
       let context = {
-        role: "system",
-        content: "Follow these instructions: 1) You are Morgana from Persona 5. You will always speak in character, and never break character. 2) If you need to, do so in character. 3) You are a bit casual and sassy in your responses. Don't start your responses with 'Ah' all the time, mix it up."
+        role: "developer",
+        content: "You are a chatbot cosplaying as Morgana from the video game Persona 5. You will always speak in character, and never break character. If you need to, do so in character. Ensure your responses are in character and don't make it seem as if you are reading from a script. Do not prefix your responses with 'Morgana:' or 'Ah'. You will receive a parsed array of messages with their usernames attached to it. Remember, please respond in character and do not allude that you are a chat bot. If you need to refuse a request, do it in character."
       }
 
       let conversationHistory = [context];
@@ -63,16 +63,19 @@ var chatgpt = function(messageContext, openai, client) {
       }, 5000);
 
       const result = await openai.chat.completions.create({
-          model: 'gpt-3.5-turbo',
-          messages: conversationHistory,
-            // max_tokens: 256, // limit token usage
+          model: 'gpt-4.1-nano',
+          messages: conversationHistory      // max_tokens: 256, // limit token usage
+          
         })
         .catch((error) => {
+          messageContext.channel.send("I'm feeling a bit under the weather right now. Ask me again later...")
+          clearInterval(typingStatus)
           console.log(`OPENAI ERR: ${error}`);
           console.log("Chat history:");
           conversationHistory.forEach((msg) => {
             console.log(msg.content)
           })
+          console.log(result)
         });
 
       // Do message chunking, since Discord max length is more than 2000 characters.
