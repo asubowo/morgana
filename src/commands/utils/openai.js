@@ -68,6 +68,8 @@ var chatgpt = function(messageContext, openai, client) {
           
         })
         .catch((error) => {
+          messageContext.channel.send("I'm feeling a bit under the weather right now. Ask me again later...")
+          clearInterval(typingStatus)
           console.log(`OPENAI ERR: ${error}`);
           console.log("Chat history:");
           conversationHistory.forEach((msg) => {
