@@ -64,8 +64,8 @@ var chatgpt = function(messageContext, openai, client) {
 
       const result = await openai.chat.completions.create({
           model: 'gpt-4.1-nano',
-          messages: conversationHistory,         // max_tokens: 256, // limit token usage
-          tools: [ { type: "web_search_preview" } ]
+          messages: conversationHistory      // max_tokens: 256, // limit token usage
+          
         })
         .catch((error) => {
           console.log(`OPENAI ERR: ${error}`);
