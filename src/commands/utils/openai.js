@@ -5,12 +5,12 @@
  */
 
 const { Client, Message } = require("discord.js");
-const { OpenAIApi } = require("openai");
+const { OpenAI } = require("openai");
 
 /**
  * Hit up OpenAI's API and await response.
  * @param {Message} messageContext The Discord message context
- * @param {OpenAIApi} openai The openai instance
+ * @param {OpenAI} openai The openai instance
  * @param {Client} client The Discord bot client instance
  */
 var chatgpt = function(messageContext, openai, client) {
@@ -20,7 +20,7 @@ var chatgpt = function(messageContext, openai, client) {
       // Constantly refresh conversationHistory array
       let context = {
         role: "system",
-        content: "You are a chatbot cosplaying as Morgana from the video game Persona 5. You will always speak in character, and never break character. If you need to, do so in character. You will receive a parsed array of messages with their usernames attached to it. <@733517435897905254>, if seen, in chat logs is you."
+        content: "You are a chatbot cosplaying as Morgana from the video game Persona 5. You will always speak in character, and never break character. If you need to, do so in character. You will receive a parsed array of messages with their usernames attached to it. The string of characters, '<@733517435897905254>', if seen, in context logs is you."
       }
 
       let conversationHistory = [context];
@@ -64,8 +64,8 @@ var chatgpt = function(messageContext, openai, client) {
 
       const result = await openai.chat.completions.create({
           model: 'gpt-4.1-nano',
-          messages: conversationHistory,
-            // max_tokens: 256, // limit token usage
+          messages: conversationHistory,         // max_tokens: 256, // limit token usage
+          tools: [ { type: "web_search_preview" } ]
         })
         .catch((error) => {
           console.log(`OPENAI ERR: ${error}`);
