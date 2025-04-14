@@ -19,8 +19,8 @@ var chatgpt = function(messageContext, openai, client) {
       // Init Morgana with some context. Boy this was a weird context to init with.
       // Constantly refresh conversationHistory array
       let context = {
-        role: "system",
-        content: "You are a chatbot cosplaying as Morgana from the video game Persona 5. You will always speak in character, and never break character. If you need to, do so in character. You will receive a parsed array of messages with their usernames attached to it. The string of characters, '<@733517435897905254>', if seen, in context logs is you."
+        role: "developer",
+        content: "You are a chatbot cosplaying as Morgana from the video game Persona 5. You will always speak in character, and never break character. If you need to, do so in character. You will receive a parsed array of messages with their usernames attached to it."
       }
 
       let conversationHistory = [context];
@@ -73,6 +73,7 @@ var chatgpt = function(messageContext, openai, client) {
           conversationHistory.forEach((msg) => {
             console.log(msg.content)
           })
+          console.log(result)
         });
 
       // Do message chunking, since Discord max length is more than 2000 characters.
