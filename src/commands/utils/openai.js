@@ -7,6 +7,49 @@
 const { Client, Message } = require("discord.js");
 const { OpenAI } = require("openai");
 
+// Define tools available via MCP
+const tools = [
+  {
+    type: 'function',
+    function: {
+      name: 'get-forecast',
+      description: 'Gets the weather forecast for a given location',
+      parameters: {
+        type: 'object',
+        properties: {
+          latitude: {
+            type: 'string',
+            description: 'Latitude of the location'
+          },
+          longitude: {
+            type: 'string',
+            description: 'Longitude of the location'
+          }
+        },
+        required: ['latitude', 'longitude']
+      }
+    }
+  },
+
+  {
+    type: 'function',
+    function: {
+      name: 'get-alerts',
+      description: 'Get weather alerts for a state',
+      parameters: {
+        type: 'object',
+        properties: {
+          state: {
+            type: 'string',
+            description: 'Two-letter state code (e.g. CA, NY)'
+          }
+        },
+        required: ['state']
+      }
+    }
+  }
+]
+
 /**
  * Hit up OpenAI's API and await response.
  * @param {Message} messageContext The Discord message context
@@ -64,7 +107,9 @@ var chatgpt = function(messageContext, openai, client) {
 
       const result = await openai.chat.completions.create({
           model: 'gpt-4.1-nano',
-          messages: conversationHistory      // max_tokens: 256, // limit token usage
+          messages: conversationHistory,
+          tools,
+          tool_choice: 'auto', // let gpt decide what to use whenever
           
         })
         .catch((error) => {
@@ -81,19 +126,54 @@ var chatgpt = function(messageContext, openai, client) {
       // Do message chunking, since Discord max length is more than 2000 characters.
       // We don't use the reply function here on purpose.
       var reply = result.choices[0].message;
-      if (reply.content.length > maxLength) {
-        console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.");
 
-        const messageChunks = splitMessage(reply.content.toString(), 2000);
-        for (chunk of messageChunks) {
-          await messageContext.channel.sendTyping();
-          messageContext.channel.send(chunk);
+
+      if (reply.tool_calls) {
+        const toolCall = reply.tool_calls[0];
+        const args = JSON.parse(toolCall.function.arguments);
+
+        if (toolCall.function.name === 'get-forecast') {
+          const weather = await fetch(`http://mcp-server.local/api/weather`, {
+            method: 'POST',
+            body: JSON.stringify({ latitude: args.latitude }, { longitude: args.longitude }),
+            headers: { 'Content-Type': 'application/json' },
+          }).then(res => res.json)
         }
-        clearInterval(typingStatus);
-            
-      } else {
-        clearInterval(typingStatus);
-        messageContext.reply(reply);
+
+        const followup = await openai.chat.completions.create({
+          model: 'gpt-4.1-nano',
+          messages: [
+            ...conversationHistory,
+            {
+              role: 'assistant',
+              tool_calls: [toolCall],
+            },
+            {
+              role: 'tool',
+              tool_call_id: toolCall.id,
+              content: JSON.stringify(weather),
+            }
+          ]
+        })
+
+        const finalMessage = followup.choices[0].message.content
+        messageContext.channel.send(finalMessage);
+      }
+      else {
+        if (reply.content.length > maxLength) {
+          console.log("OPENAI: RESPONSE MORE THAN 2000 CHARACTERS.");
+  
+          const messageChunks = splitMessage(reply.content.toString(), 2000);
+          for (chunk of messageChunks) {
+            await messageContext.channel.sendTyping();
+            messageContext.channel.send(chunk);
+          }
+          clearInterval(typingStatus);
+              
+        } else {
+          clearInterval(typingStatus);
+          messageContext.reply(reply);
+        }
       }
     } catch (error) {
       console.error(`ERR: ${error}`);
