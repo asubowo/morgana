@@ -68,7 +68,7 @@ var chatgpt = function(messageContext, openai, client) {
 
       let conversationHistory = [context];
       let maxLength = 2000; // The current max character length of a Discord message
-
+      let reply = '';
       let prevMessages = await messageContext.channel.messages.fetch({ limit: 30 });
       prevMessages.reverse();
       prevMessages.forEach((msg) => {
