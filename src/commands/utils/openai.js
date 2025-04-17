@@ -6,49 +6,12 @@
 
 const { Client, Message } = require("discord.js");
 const { OpenAI } = require("openai");
+const { McpClient } = require("@modelcontextprotocol/sdk")
 
-// Define tools available via MCP
-const tools = [
-  {
-    type: 'function',
-    function: {
-      name: 'get-forecast',
-      description: 'Gets the weather forecast for a given location',
-      parameters: {
-        type: 'object',
-        properties: {
-          latitude: {
-            type: 'string',
-            description: 'Latitude of the location'
-          },
-          longitude: {
-            type: 'string',
-            description: 'Longitude of the location'
-          }
-        },
-        required: ['latitude', 'longitude']
-      }
-    }
-  },
+const mcpClient = new McpClient({
+  serverUrl: 'http://localhost:9595/sse',
+});
 
-  {
-    type: 'function',
-    function: {
-      name: 'get-alerts',
-      description: 'Get weather alerts for a state',
-      parameters: {
-        type: 'object',
-        properties: {
-          state: {
-            type: 'string',
-            description: 'Two-letter state code (e.g. CA, NY)'
-          }
-        },
-        required: ['state']
-      }
-    }
-  }
-]
 
 /**
  * Hit up OpenAI's API and await response.
@@ -106,9 +69,9 @@ var chatgpt = function(messageContext, openai, client) {
       }, 5000);
 
       const result = await openai.chat.completions.create({
-          model: 'gpt-4.1-nano',
+          model: 'gpt-4.1',
           messages: conversationHistory,
-          tools,
+          tools: await mcpClient.getToolSpecs(),
           tool_choice: 'auto', // let gpt decide what to use whenever
           
         })
@@ -125,7 +88,7 @@ var chatgpt = function(messageContext, openai, client) {
 
       // Do message chunking, since Discord max length is more than 2000 characters.
       // We don't use the reply function here on purpose.
-      var reply = result.choices[0].message;
+      reply = result.choices[0].message;
 
 
       if (reply.tool_calls) {
@@ -133,7 +96,7 @@ var chatgpt = function(messageContext, openai, client) {
         const args = JSON.parse(toolCall.function.arguments);
 
         if (toolCall.function.name === 'get-forecast') {
-          const weather = await fetch(`http://mcp-server.local/api/weather`, {
+          const weather = await fetch(`localhost:9595/v1/mcp_servers/weather`, {
             method: 'POST',
             body: JSON.stringify({ latitude: args.latitude }, { longitude: args.longitude }),
             headers: { 'Content-Type': 'application/json' },
