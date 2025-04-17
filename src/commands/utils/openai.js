@@ -1,17 +1,51 @@
 /**
  * @author Andrew Subowo
- * @version 2.2
+ * @version 3.3
  * Now includes more AI - reticulating splines.
  */
 
 const { Client, Message } = require("discord.js");
 const { OpenAI } = require("openai");
-const { McpClient } = require("@modelcontextprotocol/sdk")
+const { Client: McpClient, ClientOptions }  = require('@modelcontextprotocol/sdk/client/index.js')
+const { SSEClientTransport } = require('@modelcontextprotocol/sdk/client/sse.js')
 
+
+const transport = new SSEClientTransport({
+  url: 'http://localhost:9595/sse'
+})
+
+// Create an instance of McpClient
 const mcpClient = new McpClient({
   serverUrl: 'http://localhost:9595/sse',
+  transport: transport
 });
 
+
+
+
+connectMCP();
+console.log(mcpClient);
+
+
+async function connectMCP() {
+  try {
+    console.log("attempting to connect to MCP server...")
+    await mcpClient.connect()
+    console.log(mcpClient);
+    console.log("Connected to MCP server")
+
+    // If you need to handle events like close or error, you can attach event listeners like so:
+    mcpClient.on('close', () => {
+      console.log('Connection to MCP closed');
+    });
+
+    mcpClient.on('error', (error) => {
+      console.error('MCP Client Error:', error);
+    });
+  } catch (error) {
+    console.error("Failed to connect", error)
+  }
+}
 
 /**
  * Hit up OpenAI's API and await response.
@@ -22,6 +56,9 @@ const mcpClient = new McpClient({
 var chatgpt = function(messageContext, openai, client) {
   (async() => {
     try {
+
+      await connectMCP();
+      console.log(mcpClient);
       // Init Morgana with some context. Boy this was a weird context to init with.
       // Constantly refresh conversationHistory array
       let context = {
@@ -68,35 +105,36 @@ var chatgpt = function(messageContext, openai, client) {
         messageContext.channel.sendTyping();
       }, 5000);
 
+      
+      const tools = await mcpClient.listTools();
       const result = await openai.chat.completions.create({
           model: 'gpt-4.1',
           messages: conversationHistory,
-          tools: await mcpClient.getToolSpecs(),
+          tools: tools,
           tool_choice: 'auto', // let gpt decide what to use whenever
           
         })
         .catch((error) => {
           messageContext.channel.send("I'm feeling a bit under the weather right now. Ask me again later...")
           clearInterval(typingStatus)
-          console.log(`OPENAI ERR: ${error}`);
+          console.error(`OPENAI ERR:`, error);
           console.log("Chat history:");
           conversationHistory.forEach((msg) => {
             console.log(msg.content)
           })
-          console.log(result)
         });
+
+      if (!result) return;
 
       // Do message chunking, since Discord max length is more than 2000 characters.
       // We don't use the reply function here on purpose.
       reply = result.choices[0].message;
-
-
       if (reply.tool_calls) {
         const toolCall = reply.tool_calls[0];
         const args = JSON.parse(toolCall.function.arguments);
 
         if (toolCall.function.name === 'get-forecast') {
-          const weather = await fetch(`localhost:9595/v1/mcp_servers/weather`, {
+          const weather = await fetch(`localhost:9595/sse`, {
             method: 'POST',
             body: JSON.stringify({ latitude: args.latitude }, { longitude: args.longitude }),
             headers: { 'Content-Type': 'application/json' },
@@ -129,7 +167,7 @@ var chatgpt = function(messageContext, openai, client) {
           const messageChunks = splitMessage(reply.content.toString(), 2000);
           for (chunk of messageChunks) {
             await messageContext.channel.sendTyping();
-            messageContext.channel.send(chunk);
+            await messageContext.channel.send(chunk);
           }
           clearInterval(typingStatus);
               
