@@ -18,6 +18,8 @@ import { logger } from './utils/logger.js'
 
 
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
+const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9595/sse'
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -39,7 +41,7 @@ let mcpClient = new McpClient({
     name: 'morgana',version: '3.3' },
     { capabilities: {} },
 )
-const transport = new SSEClientTransport(new URL('http://localhost:9595/sse'))
+const transport = new SSEClientTransport(new URL(mcpServerUrl))
 
 async function connectMCP() {
   logger.info("attempting to connect to MCP server")
