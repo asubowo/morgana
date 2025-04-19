@@ -5,22 +5,21 @@
  */
 
 
-const { EmbedBuilder, SlashCommandBuilder, CommandInteraction } = require('discord.js');
+import { EmbedBuilder, SlashCommandBuilder, CommandInteraction } from 'discord.js'
 
-module.exports = {
-  data: new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
     .setName('roll')
     .setDescription('Roll a set of virtual dice you specify')
     .addStringOption(option => option.setName('roll')
       .setDescription('Dice roll syntax: d20, 3d10+1')
-      .setRequired(true)),
+      .setRequired(true))
   
-  /**
-   * 
-   * @param {CommandInteraction} interaction 
-   * @returns A Discord Embed holding the result
-   */
-  async execute(interaction) {
+/**
+ * 
+ * @param {CommandInteraction} interaction 
+ * @returns A Discord Embed holding the result
+ */
+export async function execute(interaction) {
     
     // Get the dice roll syntax
     const content = interaction.options.getString('roll');
@@ -126,7 +125,7 @@ module.exports = {
 
     return interaction.reply({ embeds: [embed] });
   }
-}
+
 
 /**
 * @param {Integer} max The highest we can roll

@@ -33,7 +33,7 @@ module.exports = {
       });
       
       resp.on('error', (err) => {
-        console.log(err);
+        logger.info(err);
       }); 
     })       
   }

@@ -39,7 +39,7 @@ module.exports = {
           localName = "Morgana's Network";
         }
 
-        console.log
+        logger.info
         const embed = new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle(localName + ' - Network Speed Test')
@@ -54,7 +54,7 @@ module.exports = {
 
         return interaction.editReply({ embeds: [embed] });
       } catch(err) {
-          console.error(err);
+          logger.error(err);
           return interaction.editReply('The speedtest is unavailable at this time');
       }
     }
