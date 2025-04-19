@@ -63,7 +63,6 @@ const openAI = new OpenAI({
 });
 
 client.once('ready', function () {
-    logger.debug(process.env);
     logger.info('bot initialized');
     client.user.setPresence({
         activities: [{ name: 'over Cafe LeBlanc', type: ActivityType.Watching }]
