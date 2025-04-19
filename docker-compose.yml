@@ -7,7 +7,6 @@ services:
     image: asubowo/morgana:3.2
     restart: unless-stopped
     env_file: .env
-    network_mode: bridge
     networks:
       - api
 
