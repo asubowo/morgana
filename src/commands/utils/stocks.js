@@ -4,14 +4,14 @@
  * Doesn't support slash commands BUT updated with better Andrew knowledge of NodeJS!
  */
 
-const yahooFinance = require('yahoo-finance2').default;
-const { EmbedBuilder, Message } = require('discord.js');
-
+import { EmbedBuilder, Message } from 'discord.js'
+import yahooFinance from 'yahoo-finance2';
+import { logger } from '../../utils/logger.js'
 /**
  * 
  * @param {Message} messageContext 
  */
-var getStonks = function(messageContext) {
+export function getStonks(messageContext) {
     var regex = /\$([A-Z])\w{0,4}\b/gim;
     var stock = messageContext.content.match(regex);
     
@@ -60,8 +60,8 @@ var getStonks = function(messageContext) {
             return await messageContext.channel.send( { embeds: [ embed ]});
 
         } catch (err) {
-            console.log(err);
-            console.log(err.message);
+            logger.info(err);
+            logger.info(err.message);
             return
         }
     })();
@@ -74,8 +74,4 @@ var getStonks = function(messageContext) {
  */
 function percentRound(num) {
     return Number.parseFloat(num).toFixed(2);
-}
-
-module.exports = {
-    getStonks : getStonks
 }

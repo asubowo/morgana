@@ -44,7 +44,7 @@ var lfg = function(discord) {
             .then(collected => {
               // Build RSVP list
               let rsvpusersMap = collected.last().users.cache;
-              //console.log(collected.first().users.cache);
+              //logger.info(collected.first().users.cache);
 
               let users = [];
               // Remove Morgana and bots from reaction list
@@ -84,7 +84,7 @@ var lfg = function(discord) {
               lfgChannel.send(embed);
           })
           .catch(collected => {
-              console.log("not enough reservations!");
+              logger.info("not enough reservations!");
           });
         });
         break;

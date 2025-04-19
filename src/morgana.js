@@ -1,29 +1,60 @@
 /**
  * @author Andrew Subowo
- * @version 3.1
+ * @version 3.3
  */
-require('dotenv').config({ path: '.env' });
 
-const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
+import dotenv from 'dotenv'
+import fs from 'fs'
+import path from 'path'
+import { Client, GatewayIntentBits, Collection, ActivityType } from 'discord.js'
+import { OpenAI } from 'openai'
+import { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js'
+import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
+import { getStonks }  from './commands/utils/stocks.js'
+import { sublinker } from './commands/reddit/sublinker.js'
+import { chatgpt } from './commands/utils/openai.js'
+import { fileURLToPath } from 'url'
+import { logger } from './utils/logger.js'
 
-const { OpenAI } = require('openai');
 
-const fs = require('node:fs');
-const path = require('node:path');
-const stocks = require('./commands/utils/stocks.js');
-const sublinker = require('./commands/reddit/sublinker.js');
-const chatgptinator = require('./commands/utils/openai.js');
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+dotenv.config({ path: path.resolve(__dirname, '../.env') })
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+    const command = await import(`file://${filePath}`)
     client.commands.set(command.data.name, command);
+}
+
+// Create an instance of McpClient
+let mcpClient = new McpClient({
+    name: 'morgana',version: '3.3' },
+    { capabilities: {} },
+)
+const transport = new SSEClientTransport(new URL('http://localhost:9595/sse'))
+
+async function connectMCP() {
+  logger.info("attempting to connect to MCP server")
+    try {
+        await mcpClient.connect(transport)
+        logger.info("MCP connected!");
+        const tools = await mcpClient.listTools();
+        logger.debug("Available tools from MCP:", tools);
+        return mcpClient;
+    } catch (err) {
+        logger.error("Failed to connect MCP:", err);
+        logger.warn("MCP server is unreachable. MCP tools will be unavailable for the remainder of this instance.")
+        logger.debug(mcpClient)
+        return null;
+    }
 }
 
 // OpenAI init
@@ -32,7 +63,7 @@ const openAI = new OpenAI({
 });
 
 client.once('ready', function () {
-    console.log('bot initialized');
+    logger.info('bot initialized');
     client.user.setPresence({
         activities: [{ name: 'over Cafe LeBlanc', type: ActivityType.Watching }]
     });
@@ -40,27 +71,27 @@ client.once('ready', function () {
 
 // Intercept regular messages for stock and subreddit hotlinking
 client.on('messageCreate', async message => {
-
-    if (!respondAnywhere) {
+    if (respondAnywhere === "false") {
         //Check if we're in the targeted chatgpt channel
         if (!message.author.bot && message.channel.id == process.env.CHATGPT_CHANNEL && !message.content.startsWith('!')) {
-            chatgptinator.chatgpt(message, openAI, client);
+            chatgpt(message, openAI, client, mcpClient);
         }
     } else {
         // Make morgana respond only if he's mentioned
         if (!message.author.bot && !message.content.startsWith('!') && (message.mentions.members.has(client.user.id))) {
-            chatgptinator.chatgpt(message, openAI, client);
+            logger.debug("I was mentioned! I should respond.")
+            chatgpt(message, openAI, client, mcpClient);
         }
     }
 
     // Don't handle anything from a bot
     if (!message.author.bot) {
         if (containsStock(message.content)) {
-            stocks.getStonks(message);
+            getStonks(message);
         }
 
         if (containsSubreddit(message.content)) {
-            sublinker.sublinker(message);
+            sublinker(message);
         }
     }
 });
@@ -88,11 +119,17 @@ client.on('interactionCreate', async interaction => {
     try {
         await command.execute(interaction);
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         await interaction.reply({ content: "Try again next time", ephemeral: true });
     }
 });
 
+process.on('SIGINT', () => {
+    mcpClient.close();
+    logger.info("Gracefully closed MCP connection");
+    process.exit();
+  });
+  
 /**
  * 
  * @param {String} message The message content
@@ -126,4 +163,5 @@ function containsSubreddit(message) {
     }
 }
 
+connectMCP();
 client.login(process.env.TOKEN); 
