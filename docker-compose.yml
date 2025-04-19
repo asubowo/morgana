@@ -8,3 +8,9 @@ services:
     restart: unless-stopped
     env_file: .env
     network_mode: bridge
+    networks:
+      - api
+
+ networks:
+  api:
+    external: true
