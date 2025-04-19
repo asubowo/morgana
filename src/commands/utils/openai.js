@@ -164,7 +164,7 @@ async function respond(responseContent, messageContext) {
       await messageContext.channel.send(chunk);
     }
   } else {
-    await messageContext.reply(responseContent);
+    await messageContext.channel.send(responseContent);
   }
 }
 
