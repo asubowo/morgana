@@ -9,8 +9,8 @@ FROM base AS builder
 LABEL stage=build
 USER node
 WORKDIR /apps/node/morgana
-COPY --chown=node:node .package.json .
-COPY --chown=node:node .package-lock.json .
+COPY --chown=node:node package.json .
+COPY --chown=node:node package-lock.json .
 RUN npm ci
 
 # .dockerignore ignores node_modules on host system, so pull it from builder stage
