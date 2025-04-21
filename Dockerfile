@@ -3,6 +3,8 @@ FROM node:22.14.0 AS base
 USER node
 WORKDIR /apps/node/morgana/src
 RUN chown -R node:node /apps/node/morgana/src
+RUN touch ~/.yf2-cookies.json
+RUN chown node:node ~/.yf2-cookies.json
 
 FROM base AS builder
 # Run 'docker image prune --filter label=stage=build' to remove this dangling image
