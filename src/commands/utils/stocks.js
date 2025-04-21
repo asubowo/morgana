@@ -5,7 +5,7 @@
  */
 
 import { EmbedBuilder, Message } from 'discord.js'
-import yahooFinance from '../node_modules/yahoo-finance2'
+import yahooFinance from 'yahoo-finance2'
 import os from 'os'
 import path from 'path'
 import { FileCookieStore } from 'tough-cookie-file-store'
