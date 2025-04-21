@@ -5,8 +5,17 @@
  */
 
 import { EmbedBuilder, Message } from 'discord.js'
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../node_modules/yahoo-finance2'
+import os from 'os'
+import path from 'path'
+import { FileCookieStore } from 'tough-cookie-file-store'
+import { ExtendedCookieJar } from 'yahoo-finance2';
 import { logger } from '../../utils/logger.js'
+
+const cookiePath = path.join(os.homedir(), ".yf2-cookies.json");
+const cookieJar = new ExtendedCookieJar(new FileCookieStore(cookiePath));
+yahooFinance.setGlobalConfig({ cookieJar });
+
 /**
  * 
  * @param {Message} messageContext 
