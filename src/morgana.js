@@ -37,7 +37,7 @@ for (const file of commandFiles) {
 
 // Create an instance of McpClient
 let mcpClient = new McpClient({
-  name: 'morgana', version: '3.3'
+  name: 'morgana', version: '4.0'
 },
   { capabilities: {} },
 )
