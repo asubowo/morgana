@@ -165,5 +165,6 @@ function containsSubreddit(message) {
     }
 }
 
+logger.info(`Using log level: ${process.env.LOG_LEVEL || 'info'}`)
 connectMCP();
 client.login(process.env.TOKEN); 
