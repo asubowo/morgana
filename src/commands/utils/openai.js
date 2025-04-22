@@ -1,6 +1,6 @@
 /**
  * @author Andrew Subowo
- * @version 3.3
+ * @version 4.0
  * Now includes more AI - reticulating splines.
  */
 
@@ -9,7 +9,7 @@ import { Client, Message } from 'discord.js'
 import { OpenAI } from 'openai'
 import { logger } from '../../utils/logger.js'
 import { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js'
-const maxLength = 2000; // The current max character length of a Discord message
+const maxLength = 2000 // The current max character length of a Discord message
 
 /**
  * Hit up OpenAI's API and await response.
@@ -86,7 +86,7 @@ export async function chatgpt(messageContext, openai, client, mcpClient) {
         })
       })
 
-    if (!result) return;
+    if (!result) return
     
     reply = result.choices[0].message
 
@@ -101,7 +101,7 @@ export async function chatgpt(messageContext, openai, client, mcpClient) {
         const toolResult = await mcpClient.callTool({
           name: toolCall.function.name,
           arguments: args,
-        });
+        })
     
         toolResponseContent = toolResult.content
     
@@ -117,15 +117,12 @@ export async function chatgpt(messageContext, openai, client, mcpClient) {
           ]
         });
     
-        const fallbackMessage = fallbackResponse.choices[0].message.content;
-        //await messageContext.channel.send(fallbackMessage);
+        const fallbackMessage = fallbackResponse.choices[0].message.content
         respond(fallbackMessage, messageContext)
         clearInterval(typingStatus)
         return
       }
       
-      // otherwise just send the followup response to the tool response
-      // TODO: do message chunking
       const followup = await openai.chat.completions.create({
         model: "gpt-4.1",
         messages: [
@@ -136,7 +133,6 @@ export async function chatgpt(messageContext, openai, client, mcpClient) {
       })
     
       const finalMessage = followup.choices[0].message.content
-      //await messageContext.channel.send(finalMessage);
       respond(finalMessage, messageContext)
       clearInterval(typingStatus)
       return
