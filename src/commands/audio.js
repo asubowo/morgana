@@ -1,6 +1,6 @@
 /**
  * @author Andrew Subowo
- * @version 2.0
+ * @version 4.0
  * Now supports slash commands!
  */
 
@@ -15,7 +15,7 @@ export const data = new SlashCommandBuilder()
     .setRequired(true)
     .addChoices(
       { name: 'Ghost', value: 'ghost' }
-    ));
+    ))
 
 /**
  * 
@@ -23,21 +23,21 @@ export const data = new SlashCommandBuilder()
  * @returns 
  */
 export async function execute(interaction) {
-  const channel = interaction.member.voice.channelId;
+  const channel = interaction.member.voice.channelId
 
   // Check if the user is in a voice channel
   if (!channel) {
-    return await interaction.reply({ content: 'You must be in a voice channel to use this command', ephemeral: true });
+    return await interaction.reply({ content: 'You must be in a voice channel to use this command', ephemeral: true })
   }
 
-  const voiceChannel = interaction.member.voice.channelId;
+  const voiceChannel = interaction.member.voice.channelId
   const guildId = interaction.guildId;
-  const adapterCreator = interaction.guild.voiceAdapterCreator;
+  const adapterCreator = interaction.guild.voiceAdapterCreator
 
   //const connection = getVoiceConnection(interaction.guildId);
   const sfx = interaction.options.getString('sfx');
   
-  let resource = createAudioResource('./assets/audio/' + sfx + '.mp3');
+  let resource = createAudioResource('./assets/audio/' + sfx + '.mp3')
 
   const player = createAudioPlayer( {
       behaviors: {
@@ -46,7 +46,7 @@ export async function execute(interaction) {
       },
   });
 
-  player.play(resource);
+  player.play(resource)
 
   const connection = joinVoiceChannel({
     channelId: voiceChannel,
@@ -54,23 +54,23 @@ export async function execute(interaction) {
     adapterCreator: adapterCreator,
   });
 
-  const subscription = connection.subscribe(player);
+  const subscription = connection.subscribe(player)
 
   if (subscription) {
-    setTimeout(() => subscription.unsubscribe(), 5_000);
+    setTimeout(() => subscription.unsubscribe(), 5_000)
   }
 
   player.on('error', error => {
-    logger.error(error);
+    logger.error(error)
   })
 
   // Leave the channel when finished playing the audio snippet
   player.on(AudioPlayerStatus.Idle, () => {
-    connection.destroy();
-    player.stop();
+    connection.destroy()
+    player.stop()
   });
 
-  return await interaction.reply({ content: "played audio!", ephemeral: true });
+  return await interaction.reply({ content: "played audio!", ephemeral: true })
 }
 
 

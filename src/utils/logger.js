@@ -1,12 +1,12 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-const LOG_LEVELS = ['error', 'warn', 'info', 'debug'];
-const CURRENT_LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const LOG_LEVELS = ['error', 'warn', 'info', 'debug']
+const CURRENT_LOG_LEVEL = process.env.LOG_LEVEL || 'info'
 
 
 function shouldLog(level) {
-  return LOG_LEVELS.indexOf(level) <= LOG_LEVELS.indexOf(CURRENT_LOG_LEVEL);
+  return LOG_LEVELS.indexOf(level) <= LOG_LEVELS.indexOf(CURRENT_LOG_LEVEL)
 }
 
 export const logger = {
