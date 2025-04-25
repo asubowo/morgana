@@ -10,6 +10,7 @@ import { Client, GatewayIntentBits, Collection, ActivityType } from 'discord.js'
 import { OpenAI } from 'openai'
 import { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js'
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
+import { EventSource } from 'eventsource'
 import { getStonks } from './commands/utils/stocks.js'
 import { sublinker } from './commands/reddit/sublinker.js'
 import { chatgpt } from './commands/utils/openai.js'
@@ -18,6 +19,8 @@ import { logger } from './utils/logger.js'
 
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
 const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9595/sse'
+const mcpToken = process.env.MCP_SERVER_API_KEY
+globalThis.EventSource = EventSource
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
@@ -41,7 +44,26 @@ let mcpClient = new McpClient({
 },
   { capabilities: {} },
 )
-const transport = new SSEClientTransport(new URL(mcpServerUrl))
+
+// I don't know at this point.
+// Ref: https://github.com/modelcontextprotocol/typescript-sdk/blob/main/src/client/sse.ts
+// eventSourceInit.fetch() gives us control over how EventSource (used for SSE) is created
+// and what request headers get sent...at least according to ChatGPT haha.
+// TL;DR, from what I'm picking up, is that we're overriding the fetch to inject our headers
+// not a huge fan of that.
+const transport = new SSEClientTransport(new URL(mcpServerUrl), {
+  requestInit: {
+    headers: { 'authorization': `Bearer ${ mcpToken }`},
+  },
+  eventSourceInit: {
+    async fetch(input, init = {}) {
+      const headers = new Headers(init.headers || {})
+      headers.set('authorization', `Bearer ${ mcpToken }`)
+      return fetch(input, {...init, headers})
+    }
+  }
+})
+
 
 async function connectMCP() {
   logger.info("attempting to connect to MCP server")
