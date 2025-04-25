@@ -53,12 +53,14 @@ let mcpClient = new McpClient({
 // not a huge fan of that.
 const transport = new SSEClientTransport(new URL(mcpServerUrl), {
   requestInit: {
-    headers: { 'authorization': `Bearer ${ mcpToken }`},
+    headers: mcpToken ? { authorization: `Bearer ${ mcpToken }`} : {}, // dont set auth headers if MCP key isn't set
   },
   eventSourceInit: {
     async fetch(input, init = {}) {
       const headers = new Headers(init.headers || {})
-      headers.set('authorization', `Bearer ${ mcpToken }`)
+      if ( mcpToken ) {
+        headers.set('authorization', `Bearer ${ mcpToken }`)
+      }
       return fetch(input, {...init, headers})
     }
   }
