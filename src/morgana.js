@@ -19,7 +19,7 @@ import { logger } from './utils/logger.js'
 
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
 const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9595/sse'
-const mcpToken = process.env.MCP_SERVER_API_KEY
+const mcpToken = process.env.MCP_SERVER_JWT_SECRET
 globalThis.EventSource = EventSource
 
 const __filename = fileURLToPath(import.meta.url);
