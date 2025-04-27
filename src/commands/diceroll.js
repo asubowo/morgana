@@ -19,7 +19,7 @@ export const data = new SlashCommandBuilder()
  * @param {CommandInteraction} interaction 
  * @returns A Discord Embed holding the result
  */
-export async function roll(interaction) {
+export async function execute(interaction) {
     
     // Get the dice roll syntax
     const content = interaction.options.getString('roll');
