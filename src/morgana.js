@@ -51,9 +51,15 @@ let mcpClient = new McpClient({
 // and what request headers get sent...at least according to ChatGPT haha.
 // TL;DR, from what I'm picking up, is that we're overriding the fetch to inject our headers
 // not a huge fan of that.
+
+const authHeaders = new Headers()
+if (mcpToken) {
+  authHeaders.set('authorization', `Bearer ${ mcpToken }`)
+}
+
 const transport = new SSEClientTransport(new URL(mcpServerUrl), {
   requestInit: {
-    headers: mcpToken ? { authorization: `Bearer ${ mcpToken }`} : {}, // dont set auth headers if MCP key isn't set
+    headers: authHeaders
   },
   eventSourceInit: {
     async fetch(input, init = {}) {
