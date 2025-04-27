@@ -19,7 +19,7 @@ export const data = new SlashCommandBuilder()
  * @param {CommandInteraction} interaction 
  * @returns A Discord Embed holding the result
  */
-export async function execute(interaction) {
+export async function roll(interaction) {
     
     // Get the dice roll syntax
     const content = interaction.options.getString('roll');
@@ -39,14 +39,14 @@ export async function execute(interaction) {
 
       let modifierInput = content.split(/[+-]/);
       if (modifierInput[1] === "") {
-        return interaction.reply({ content: 'Please include a number next to the modifier!', emphemeral: true });
+        return interaction.reply({ content: 'Please include a number next to the modifier!', ephemeral: true });
       } else {
         modifier = parseInt(modifierInput[1]);
         if (subtraction) {
           modifier = modifier * -1;
         }
         if (!Number.isInteger(modifier) || Math.abs(modifier) > 100) {
-          return interaction.reply({ content: 'You\'ve given me an invalid die modifier!', emphemeral: true });
+          return interaction.reply({ content: 'You\'ve given me an invalid die modifier!', ephemeral: true });
         }
       }
     } else {
@@ -61,24 +61,24 @@ export async function execute(interaction) {
     } else {
       multiplier = parseInt(diceRoll[0]);
       if (!Number.isInteger(multiplier) || multiplier > 100 || multiplier <= 0) {
-        return interaction.reply({ content: "I can't roll " + diceRoll[0] + " dice!", emphemeral: true });
+        return interaction.reply({ content: "I can't roll " + diceRoll[0] + " dice!", ephemeral: true });
       }
     }
 
     // Get the type of die the user is rolling
     let diceType = diceRoll[1];
     if (diceType === "") {
-      return interaction.reply({ content: 'You must specify a dice type!', emphemeral: true });
+      return interaction.reply({ content: 'You must specify a dice type!', ephemeral: true });
     } else {
       diceType = parseInt(diceRoll[1]);
       if (!Number.isInteger(diceType) || diceType === 0 || diceType > 100 || diceType <= 0) {
-        return interaction.reply({ content: "STOP! You have violated the law. Your invalid die are now forfeit.", emphemeral: true });
+        return interaction.reply({ content: "STOP! You have violated the law. Your invalid die are now forfeit.", ephemeral: true });
       }
     }
 
     let rollHolder = [];
     let rollTotal = 0;
-    for (rolls = 0; rolls < multiplier; rolls++) {
+    for (let rolls = 0; rolls < multiplier; rolls++) {
       let roll = getRandomInt(diceType);
       rollHolder.push(roll);
       rollTotal = rollTotal + roll;
