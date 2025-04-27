@@ -4,7 +4,7 @@
  */
 
 // commands/metro.js
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
 import { logger } from '../utils/logger.js'
 import https from 'https';
 
@@ -80,7 +80,7 @@ export async function execute(interaction) {
 
       resp.on('error', (err) => {
         logger.error(err);
-        return interaction.editReply({ content: 'This service is not available at this time.', ephemeral: true });
+        return interaction.editReply({ content: 'This service is not available at this time.', flags: MessageFlags.Ephemeral });
       });
     });
   }
@@ -103,7 +103,7 @@ export async function execute(interaction) {
           train.LocationName.toLowerCase().includes(station.toLowerCase()));
 
         if (stations.length === 0) {
-          return interaction.editReply({ content: `No info was found for ${station}`, ephemeral: true });
+          return interaction.editReply({ content: `No info was found for ${station}`, flags: MessageFlags.Ephemeral });
         }
 
         let embed = new EmbedBuilder()

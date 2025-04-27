@@ -5,7 +5,7 @@
  */
 
 
-import { EmbedBuilder, SlashCommandBuilder, CommandInteraction } from 'discord.js'
+import { EmbedBuilder, SlashCommandBuilder, CommandInteraction, MessageFlags } from 'discord.js'
 
 export const data = new SlashCommandBuilder()
     .setName('roll')
@@ -27,7 +27,7 @@ export async function execute(interaction) {
     
     // Make sure people aren't doing anything funky with the roll modifier
     if (content.includes('+') && content.includes('-')) {
-      return interaction.reply({ content: 'Please only subtract or add your modifier, not both!', ephemeral: true});
+      return interaction.reply({ content: 'Please only subtract or add your modifier, not both!', flags: MessageFlags.Ephemeral });
     }
 
     let modifier;
@@ -39,14 +39,14 @@ export async function execute(interaction) {
 
       let modifierInput = content.split(/[+-]/);
       if (modifierInput[1] === "") {
-        return interaction.reply({ content: 'Please include a number next to the modifier!', ephemeral: true });
+        return interaction.reply({ content: 'Please include a number next to the modifier!', flags: MessageFlags.Ephemeral });
       } else {
         modifier = parseInt(modifierInput[1]);
         if (subtraction) {
           modifier = modifier * -1;
         }
         if (!Number.isInteger(modifier) || Math.abs(modifier) > 100) {
-          return interaction.reply({ content: 'You\'ve given me an invalid die modifier!', ephemeral: true });
+          return interaction.reply({ content: 'You\'ve given me an invalid die modifier!', flags: MessageFlags.Ephemeral });
         }
       }
     } else {
@@ -61,18 +61,18 @@ export async function execute(interaction) {
     } else {
       multiplier = parseInt(diceRoll[0]);
       if (!Number.isInteger(multiplier) || multiplier > 100 || multiplier <= 0) {
-        return interaction.reply({ content: "I can't roll " + diceRoll[0] + " dice!", ephemeral: true });
+        return interaction.reply({ content: "I can't roll " + diceRoll[0] + " dice!", flags: MessageFlags.Ephemeral });
       }
     }
 
     // Get the type of die the user is rolling
     let diceType = diceRoll[1];
     if (diceType === "") {
-      return interaction.reply({ content: 'You must specify a dice type!', ephemeral: true });
+      return interaction.reply({ content: 'You must specify a dice type!', flags: MessageFlags.Ephemeral });
     } else {
       diceType = parseInt(diceRoll[1]);
       if (!Number.isInteger(diceType) || diceType === 0 || diceType > 100 || diceType <= 0) {
-        return interaction.reply({ content: "STOP! You have violated the law. Your invalid die are now forfeit.", ephemeral: true });
+        return interaction.reply({ content: "STOP! You have violated the law. Your invalid die are now forfeit.", flags: MessageFlags.Ephemeral });
       }
     }
 
