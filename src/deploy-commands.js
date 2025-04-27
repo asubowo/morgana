@@ -27,5 +27,5 @@ for (const file of commandFiles) {
 const rest = new REST({ version: '10' }).setToken(token);
 
 rest.put(Routes.applicationCommands(clientID), {body: commands})
-    .then(() => logger.info('Refreshed application slash commands.'))
-    .catch(logger.error);
+    .then(() => console.log('Refreshed application slash commands.'))
+    .catch();

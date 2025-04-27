@@ -71,7 +71,7 @@ const transport = new SSEClientTransport(new URL(mcpServerUrl), {
 })
 
 
-async function connectMCP() {
+export async function connectMCP() {
   logger.info("attempting to connect to MCP server")
   try {
     await mcpClient.connect(transport)
