@@ -1,8 +1,8 @@
 // For scenarios where you want to reconnect to an MCP server and Morgana has somehow disconnected
 
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js'
-import { logger } from '../../utils/logger'
-import { connectMCP } from '../../morgana';
+import { logger } from '../utils/logger.js'
+import { connectMCP } from '../morgana.js'
 
 
 export const data = new SlashCommandBuilder()
@@ -26,5 +26,4 @@ export async function execute(interaction) {
       logger.error(error)
     }
   }
-
 }
