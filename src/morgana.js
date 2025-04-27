@@ -16,11 +16,15 @@ import { sublinker } from './commands/reddit/sublinker.js'
 import { chatgpt } from './commands/utils/openai.js'
 import { fileURLToPath } from 'url'
 import { logger } from './utils/logger.js'
+import jwt from 'jsonwebtoken'
 
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
 const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9595/sse'
-const mcpToken = process.env.MCP_SERVER_JWT_SECRET
 globalThis.EventSource = EventSource
+
+// Sign a long term session token with the API server
+const mcpToken = jwt.sign({ sub: 'morgana', iat: Math.floor(Date.now() / 1000) },
+process.env.MCP_SERVER_SECRET)
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
@@ -51,22 +55,16 @@ let mcpClient = new McpClient({
 // and what request headers get sent...at least according to ChatGPT haha.
 // TL;DR, from what I'm picking up, is that we're overriding the fetch to inject our headers
 // not a huge fan of that.
-
-const authHeaders = new Headers()
-if (mcpToken) {
-  authHeaders.set('authorization', `Bearer ${ mcpToken }`)
-}
-
 const transport = new SSEClientTransport(new URL(mcpServerUrl), {
   requestInit: {
-    headers: authHeaders
+    headers: {
+      authorization: `Bearer ${ mcpToken }`
+    }
   },
   eventSourceInit: {
     async fetch(input, init = {}) {
       const headers = new Headers(init.headers || {})
-      if ( mcpToken ) {
-        headers.set('authorization', `Bearer ${ mcpToken }`)
-      }
+      headers.set('authorization', `Bearer ${ mcpToken }`)
       return fetch(input, {...init, headers})
     }
   }
@@ -84,7 +82,8 @@ async function connectMCP() {
   } catch (err) {
     logger.error("Failed to connect MCP:", err);
     logger.warn("MCP server is unreachable. MCP tools will be unavailable for the remainder of this instance.")
-    logger.debug(mcpClient)
+    logger.debug('Transport', transport)
+    logger.debug('MCP Client', mcpClient)
     return null;
   }
 }
