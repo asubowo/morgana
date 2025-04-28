@@ -4,6 +4,7 @@
  */
 
 import dotenv from 'dotenv'
+dotenv.config({ path: '../.env'})
 import fs from 'fs'
 import path from 'path'
 import { Client, GatewayIntentBits, Collection, ActivityType } from 'discord.js'
@@ -18,29 +19,33 @@ import { fileURLToPath } from 'url'
 import { logger } from './utils/logger.js'
 import jwt from 'jsonwebtoken'
 
-const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
+const respondAnywhere = process.env.RESPOND_ANYWHERE || false
 const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9595/sse'
-globalThis.EventSource = EventSource
-
-// Sign a long term session token with the API server
-const mcpToken = jwt.sign({ sub: 'morgana', iat: Math.floor(Date.now() / 1000) },
-process.env.MCP_SERVER_SECRET)
+const secret = process.env.MCP_SERVER_SECRET
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
-
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] })
-client.commands = new Collection()
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
+// Discord and OpenAI inits
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] })
+const openAI = new OpenAI({
+  apiKey: process.env.CHATGPT_API_KEY,
+});
+
+client.commands = new Collection()
+// command set
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file)
   const command = await import(`file://${filePath}`)
   client.commands.set(command.data.name, command)
 }
+
+
+
+
+
 
 // Create an instance of McpClient
 let mcpClient = new McpClient({
@@ -48,31 +53,50 @@ let mcpClient = new McpClient({
 },
   { capabilities: {} },
 )
+let mcpToken = ''
+globalThis.EventSource = EventSource
 
+function generateJWT() {
+  logger.info('Generating JWT token')
+  return jwt.sign(
+    { sub: 'morgana' }, secret, { expiresIn: '1h' })
+}
 // I don't know at this point.
 // Ref: https://github.com/modelcontextprotocol/typescript-sdk/blob/main/src/client/sse.ts
 // eventSourceInit.fetch() gives us control over how EventSource (used for SSE) is created
 // and what request headers get sent...at least according to ChatGPT haha.
 // TL;DR, from what I'm picking up, is that we're overriding the fetch to inject our headers
 // not a huge fan of that.
-const transport = new SSEClientTransport(new URL(mcpServerUrl), {
-  requestInit: {
-    headers: {
-      authorization: `Bearer ${ mcpToken }`
-    }
-  },
-  eventSourceInit: {
-    async fetch(input, init = {}) {
-      const headers = new Headers(init.headers || {})
-      headers.set('authorization', `Bearer ${ mcpToken }`)
-      return fetch(input, {...init, headers})
-    }
-  }
-})
-
-
-export async function connectMCP() {
+async function connectMCP() {
   logger.info("attempting to connect to MCP server")
+
+  mcpToken = generateJWT()
+
+  const transport = new SSEClientTransport(new URL(mcpServerUrl), {
+    requestInit: {
+      headers: {
+        authorization: `Bearer ${ mcpToken }`
+      }
+    },
+    eventSourceInit: {
+      async fetch(input, init = {}) {
+        const headers = new Headers(init.headers || {})
+        headers.set('authorization', `Bearer ${ mcpToken }`)
+        return fetch(input, {...init, headers})
+      }
+    }
+  })
+
+  try {
+    await mcpClient.close() // Close any existing connections for refresh token or on boot
+    logger.info('Closed MCP connection')
+  } catch (error) {
+    logger.warn('No existing MCP connection to close, or error closing:', error)
+  }
+
+  // re-initialize connection
+  mcpClient = new McpClient({ name: 'morgana', version: '4.0' }, { capabilities: {} })
+
   try {
     await mcpClient.connect(transport)
     logger.info("MCP connected!")
@@ -88,10 +112,6 @@ export async function connectMCP() {
   }
 }
 
-// OpenAI init
-const openAI = new OpenAI({
-  apiKey: process.env.CHATGPT_API_KEY,
-});
 
 client.once('ready', function () {
   logger.info('bot initialized');
@@ -131,7 +151,7 @@ client.on('messageCreate', async message => {
 client.on('messageDelete', async message => {
   if (process.env.SNIPE_USER_ID !== undefined) {
     if (message.author.id == process.env.SNIPE_USER_ID) {
-      var content = message.content
+      let content = message.content
       message.channel.send("_SNIPED! This is what <@!" + process.env.SNIPE_USER_ID + "> said:_\n" + content)
     }
   }
@@ -197,3 +217,7 @@ function containsSubreddit(message) {
 logger.info(`Using log level: ${process.env.LOG_LEVEL || 'info'}`)
 connectMCP()
 client.login(process.env.TOKEN); 
+
+setInterval(() => {
+  connectMCP()
+}, 50 * 60 * 1000)
