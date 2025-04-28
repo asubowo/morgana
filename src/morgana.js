@@ -42,11 +42,6 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command)
 }
 
-
-
-
-
-
 // Create an instance of McpClient
 let mcpClient = new McpClient({
   name: 'morgana', version: '4.0'
