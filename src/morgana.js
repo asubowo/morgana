@@ -3,8 +3,7 @@
  * @version 4.0
  */
 
-import dotenv from 'dotenv'
-dotenv.config({ path: '../.env'})
+import './utils/env.js'
 import fs from 'fs'
 import path from 'path'
 import { Client, GatewayIntentBits, Collection, ActivityType } from 'discord.js'
@@ -22,6 +21,7 @@ import jwt from 'jsonwebtoken'
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false
 const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9595/sse'
 const secret = process.env.MCP_SERVER_SECRET
+const openAIKey = process.env.CHATGPT_API_KEY
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
@@ -31,7 +31,7 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 // Discord and OpenAI inits
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] })
 const openAI = new OpenAI({
-  apiKey: process.env.CHATGPT_API_KEY,
+  apiKey: openAIKey,
 });
 
 client.commands = new Collection()
