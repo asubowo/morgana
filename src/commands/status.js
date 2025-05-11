@@ -11,13 +11,13 @@ export const data = new SlashCommandBuilder()
   .setDescription("Check Morgana's health and status")
 
 /**
- *
+ * I don't think this will work tbh
  * @param {CommandInteraction} interaction
  */
 export async function execute(interaction) {
   const mcpClient = getMCPClient()
   if (!mcpClient?.transport?.sessionId) {
-    await interaction.channel.send("❌ Not connected to MCP server.")
+    await interaction.reply("❌ Not connected to MCP server.")
     return
   }
 
