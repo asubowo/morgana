@@ -83,10 +83,10 @@ async function connectMCP() {
 
   try {
     await newClient.connect(transport)
-    mcpClient = newClient
     logger.info("MCP connected!")
-    const tools = await mcpClient.listTools()
+    const tools = await newClient.listTools()
     logger.debug("Available tools:", tools)
+    mcpClient = newClient
   } catch (err) {
     logger.error("Failed to connect to MCP:", err)
     logger.warn("MCP tools will be unavailable")
