@@ -7,10 +7,7 @@ import { logger } from "./logger.js"
 
 const mcpServerUrl = process.env.MCP_SERVER_URL || "http://localhost:9595/sse"
 
-let mcpClient = new McpClient(
-  { name: "morgana", version: "4.0" },
-  { capabilities: {} }
-)
+let mcpClient = null
 let reconnectTimeout = null
 let isConnecting = false
 let mcpToken = ""
@@ -79,13 +76,14 @@ async function connectMCP() {
   }
 
   // Reinitialize
-  mcpClient = new McpClient(
+  const newClient = new McpClient(
     { name: "morgana", version: "4.0" },
     { capabilities: {} }
   )
 
   try {
-    await mcpClient.connect(transport)
+    await newClient.connect(transport)
+    mcpClient = newClient
     logger.info("MCP connected!")
     const tools = await mcpClient.listTools()
     logger.debug("Available tools:", tools)

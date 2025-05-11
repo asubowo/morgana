@@ -22,7 +22,7 @@ export async function execute(interaction) {
   }
 
   try {
-    const tools = mcpClient.listTools()
+    const tools = await mcpClient.listTools()
     await interaction.channel.send(
       "**MCP Status**\n" +
         "- ✅ Connected to MCP Server\n" +
