@@ -14,7 +14,7 @@ export const data = new SlashCommandBuilder()
  *
  * @param {CommandInteraction} interaction
  */
-export async function execut(interaction) {
+export async function execute(interaction) {
   const mcpClient = getMCPClient()
   if (!mcpClient?.transport?.sessionId) {
     await interaction.channel.send("❌ Not connected to MCP server.")
