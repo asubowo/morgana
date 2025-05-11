@@ -47,6 +47,6 @@ export async function fetchAccessToken() {
   accessToken = json.access_token
   tokenExpiresAt = now + json.expires_in
   logger.debug("Retrieved access token", accessToken)
-  logger.info(`Access token valid until ${new Date(tokenExpiresAt * 1000).toLocaleDateString("en-CA")}`)
+  logger.info(`Access token valid until ${new Date(tokenExpiresAt * 1000).toLocaleString()}`)
   return { token: accessToken, expiresAt: tokenExpiresAt}
 }
