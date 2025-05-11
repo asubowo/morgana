@@ -40,11 +40,13 @@ export async function fetchAccessToken() {
   if (!res.ok) {
     const error = await res.text()
     logger.error("Failed to fetch access token", error)
+    return
   }
 
   const json = await res.json()
   accessToken = json.access_token
   tokenExpiresAt = now + json.expires_in
   logger.debug("Retrieved access token", accessToken)
-  return accessToken
+  logger.info(`Access token valid until ${new Date(tokenExpiresAt * 1000).toISOString()}`)
+  return { token: accessToken, expiresAt: tokenExpiresAt}
 }

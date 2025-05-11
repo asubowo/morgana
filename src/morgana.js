@@ -16,8 +16,6 @@ import { sublinker } from "./commands/reddit/sublinker.js"
 import { chatgpt } from "./commands/utils/openai.js"
 import { fileURLToPath } from "url"
 import { logger } from "./utils/logger.js"
-import jwt from "jsonwebtoken"
-
 import { fetchAccessToken } from "./utils/oauth.js"
 
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false
@@ -61,6 +59,8 @@ let mcpClient = new McpClient(
   { capabilities: {} }
 )
 let mcpToken = ""
+let reconnectTimeout = null
+let isConnecting = false
 globalThis.EventSource = EventSource
 
 // I don't know at this point.
@@ -71,8 +71,35 @@ globalThis.EventSource = EventSource
 // not a huge fan of that.
 async function connectMCP() {
   logger.info("attempting to connect to MCP server")
-  mcpToken = await fetchAccessToken()
+  if (isConnecting) {
+    logger.debug("authorization already in progress")
+    return
+  }
 
+  isConnecting = true
+
+  const tokenData = await fetchAccessToken()
+
+  if (!tokenData) {
+    logger.warn(
+      "No Access Token retrieved from authentication server, MCP features disabled"
+    )
+    isConnecting = false
+    return
+  }
+
+  mcpToken = tokenData.token
+  const now = Math.floor(Date.now() / 1000)
+  const msUntilRefresh = (tokenData.expiresAt - now - 30) * 1000
+  logger.info(
+    `Next token refresh scheduled in ${Math.floor(
+      msUntilRefresh / 1000
+    )} seconds`
+  )
+  if (reconnectTimeout) {
+    clearTimeout(reconnectTimeout)
+  }
+  reconnectTimeout = setTimeout(connectMCP, msUntilRefresh)
   const transport = new SSEClientTransport(new URL(mcpServerUrl), {
     requestInit: {
       headers: {
@@ -106,13 +133,15 @@ async function connectMCP() {
     logger.info("MCP connected!")
     const tools = await mcpClient.listTools()
     logger.debug("Available tools from MCP:", tools)
+    isConnecting = false
     return mcpClient
   } catch (err) {
     logger.error("Failed to connect MCP:", err)
     logger.warn(
-      "MCP server is unreachable. MCP tools will be unavailable for the remainder of this instance."
+      "MCP server is unreachable. MCP tools will be unavailable."
     )
     logger.debug("MCP Client", mcpClient)
+    isConnecting = false
     return null
   }
 }
@@ -232,7 +261,3 @@ function containsSubreddit(message) {
 logger.info(`Using log level: ${process.env.LOG_LEVEL || "info"}`)
 connectMCP()
 client.login(process.env.TOKEN)
-
-setInterval(() => {
-  connectMCP()
-}, 50 * 60 * 1000)
