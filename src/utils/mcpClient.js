@@ -54,7 +54,7 @@ async function connectMCP() {
 
   // Schedule next reconnect
   if (reconnectTimeout) clearTimeout(reconnectTimeout)
-  reconnectTimeout = setTimeout(startMCP, msUntilRefresh)
+  reconnectTimeout = setTimeout(connectMCP, msUntilRefresh)
 
   const transport = new SSEClientTransport(new URL(mcpServerUrl), {
     requestInit: {
