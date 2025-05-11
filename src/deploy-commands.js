@@ -1,11 +1,10 @@
 // Only run this as needed.
+import "./utils/env.js"
 import { Routes } from 'discord.js'
 import { REST } from '@discordjs/rest'
 import fs from 'fs'
 import path from 'path'
-import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
-dotenv.config({ path: '.env' })
 
 const token  = process.env.TOKEN;
 const clientID  = process.env.CLIENT_ID;
