@@ -39,8 +39,6 @@ const openAI = new OpenAI({
   apiKey: openAIKey,
 })
 
-let mcpClient = null
-
 client.commands = new Collection()
 // command set
 for (const file of commandFiles) {
@@ -65,6 +63,7 @@ client.on("messageCreate", async (message) => {
       message.channel.id == process.env.CHATGPT_CHANNEL &&
       !message.content.startsWith("!")
     ) {
+      await connectMCP()
       chatgpt(message, openAI, client)
     }
   } else {
@@ -75,6 +74,7 @@ client.on("messageCreate", async (message) => {
       message.mentions.members.has(client.user.id)
     ) {
       logger.debug("I was mentioned! I should respond.")
+      await connectMCP()
       chatgpt(message, openAI, client)
     }
   }

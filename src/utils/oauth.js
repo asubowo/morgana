@@ -10,7 +10,8 @@ export async function fetchAccessToken() {
   const now = Math.floor(Date.now() / 1000)
 
   if (accessToken && now < tokenExpiresAt - 30) {
-    return accessToken // still valid
+    logger.info("Current access token is still valid")
+    return { token: accessToken, expiresAt: tokenExpiresAt } // still valid
   }
 
   const clientId = process.env.OAUTH_CLIENT_ID
@@ -47,6 +48,10 @@ export async function fetchAccessToken() {
   accessToken = json.access_token
   tokenExpiresAt = now + json.expires_in
   logger.debug("Retrieved access token", accessToken)
-  logger.info(`Access token valid until ${new Date(tokenExpiresAt * 1000).toLocaleString()}`)
-  return { token: accessToken, expiresAt: tokenExpiresAt}
+  logger.info(
+    `Access token valid until ${new Date(
+      tokenExpiresAt * 1000
+    ).toLocaleString()}`
+  )
+  return { token: accessToken, expiresAt: tokenExpiresAt }
 }
