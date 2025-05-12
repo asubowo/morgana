@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 const LOG_LEVELS = ["error", "warn", "info", "debug"]
+=======
+import dotenv from 'dotenv'
+dotenv.config()
+
+const LOG_LEVELS = ['error', 'warn', 'info', 'debug']
+const CURRENT_LOG_LEVEL = process.env.LOG_LEVEL || 'info'
+>>>>>>> 690f6e18650d8860dca049666225850ed6738a0d
 
 const rawLogLevel = (process.env.LOG_LEVEL || "info").toLowerCase()
 const CURRENT_LOG_LEVEL = LOG_LEVELS.includes(rawLogLevel)
@@ -7,6 +15,7 @@ const CURRENT_LOG_LEVEL = LOG_LEVELS.includes(rawLogLevel)
 
 function shouldLog(level) {
   return LOG_LEVELS.indexOf(level) <= LOG_LEVELS.indexOf(CURRENT_LOG_LEVEL)
+<<<<<<< HEAD
 }
 
 function formatMessage(level, args) {
@@ -33,6 +42,8 @@ function formatMessage(level, args) {
   const timestamp = `[${date} ${time}]`
 
   return [`${levelTag} ${timestamp}`, ...args]
+=======
+>>>>>>> 690f6e18650d8860dca049666225850ed6738a0d
 }
 
 export const logger = Object.fromEntries(

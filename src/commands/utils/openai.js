@@ -136,7 +136,6 @@ export async function chatgpt(messageContext, openai, client) {
         clearInterval(typingStatus)
         return
       }
-
       const followup = await openai.chat.completions.create({
         model: "gpt-4.1",
         messages: [

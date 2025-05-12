@@ -123,12 +123,6 @@ client.on("interactionCreate", async (interaction) => {
   }
 })
 
-process.on("SIGINT", async () => {
-  await stopMCP()
-  logger.info("Gracefully closed MCP connection")
-  process.exit()
-})
-
 /**
  * Check if a message contains a stock ticker
  * @param {String} message The message content
@@ -169,3 +163,9 @@ try {
 } catch (err) {
   logger.error("Failed to initialize Morgana!", err)
 }
+
+process.on("SIGINT", async () => {
+  await stopMCP()
+  logger.info("Gracefully closed MCP connection")
+  process.exit()
+})
