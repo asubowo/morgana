@@ -54,11 +54,11 @@ async function connectMCP() {
   reconnectTimeout = setTimeout(connectMCP, msUntilRefresh)
 
   const transport = new SSEClientTransport(new URL(mcpServerUrl), {
-    requestInit: {
-      headers: {
-        authorization: `Bearer ${tokenData.token ?? ""}`,
-      },
-    },
+    // requestInit: {
+    //   headers: {
+    //     authorization: `Bearer ${tokenData.token ?? ""}`,
+    //   },
+    // },
     eventSourceInit: {
       async fetch(input, init = {}) {
         const headers = new Headers(init.headers || {})
