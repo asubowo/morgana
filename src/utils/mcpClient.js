@@ -54,20 +54,15 @@ async function connectMCP() {
   reconnectTimeout = setTimeout(connectMCP, msUntilRefresh)
 
   const transport = new SSEClientTransport(new URL(mcpServerUrl), {
-    // requestInit: {
-    //   headers: {
-    //     authorization: `Bearer ${tokenData.token ?? ""}`,
-    //   },
-    // },
+    requestInit: {
+      headers: {
+        authorization: `Bearer ${tokenData.token ?? ""}`,
+      },
+    },
     eventSourceInit: {
       async fetch(input, init = {}) {
         const headers = new Headers(init.headers || {})
-        const tokenData = fetchAccessToken()
-        if (!tokenData) {
-          logger.error("Unable to fetch access token from auth server!")
-        }
         headers.set("authorization", `Bearer ${tokenData.token}`)
-
         return fetch(input, { ...init, headers })
       },
     },
