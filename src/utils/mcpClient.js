@@ -30,7 +30,7 @@ async function connectMCP() {
 
   isConnecting = true
 
-  const tokenData = await fetchAccessToken()
+  let tokenData = await fetchAccessToken()
   if (!tokenData) {
     logger.warn("No access token retrieved — MCP will not connect")
     isConnecting = false
@@ -56,13 +56,13 @@ async function connectMCP() {
   const transport = new SSEClientTransport(new URL(mcpServerUrl), {
     requestInit: {
       headers: {
-        authorization: `Bearer ${tokenData.token ?? ""}`,
+        authorization: `Bearer ${mcpToken ?? ""}`,
       },
     },
     eventSourceInit: {
       async fetch(input, init = {}) {
         const headers = new Headers(init.headers || {})
-        headers.set("authorization", `Bearer ${tokenData.token}`)
+        headers.set("authorization", `Bearer ${mcpToken ?? ""}`)
         return fetch(input, { ...init, headers })
       },
     },
