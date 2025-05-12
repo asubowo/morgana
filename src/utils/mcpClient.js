@@ -62,7 +62,7 @@ async function connectMCP() {
     eventSourceInit: {
       async fetch(input, init = {}) {
         const headers = new Headers(init.headers || {})
-        const tokenData = await fetchAccessToken()
+        const tokenData = fetchAccessToken()
         if (!tokenData) {
           logger.error("Unable to fetch access token from auth server!")
         }
