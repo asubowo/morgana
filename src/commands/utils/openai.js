@@ -19,7 +19,7 @@ const maxLength = 2000 // The current max character length of a Discord message
 export async function chatgpt(messageContext, openai, client) {
   logger.debug("Attempting chatgpt call")
   let typingStatus = null
-  const mcpClient = getMCPClient()
+  let mcpClient = getMCPClient()
 
   try {
     // Init Morgana with some context. Boy this was a weird context to init with.
@@ -102,7 +102,7 @@ export async function chatgpt(messageContext, openai, client) {
     reply = result.choices[0].message
 
     if (reply.tool_calls) {
-      logger.debug("Tool call made")
+      logger.info("Tool call made")
       const toolCall = reply.tool_calls[0]
       const args = JSON.parse(toolCall.function.arguments)
 

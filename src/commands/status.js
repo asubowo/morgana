@@ -4,6 +4,7 @@
  */
 
 import { SlashCommandBuilder, CommandInteraction } from "discord.js"
+import { logger } from "../utils/logger.js"
 import { getMCPClient } from "../utils/mcpClient.js"
 
 export const data = new SlashCommandBuilder()
@@ -15,22 +16,25 @@ export const data = new SlashCommandBuilder()
  * @param {CommandInteraction} interaction
  */
 export async function execute(interaction) {
-  const mcpClient = getMCPClient()
-  if (!mcpClient?.transport?.sessionId) {
+  // on close the mcp client should be returned null or ""
+  let mcpClient = getMCPClient()
+  if (!mcpClient) {
     await interaction.reply("❌ Not connected to MCP server.")
     return
   }
 
   try {
     const tools = await mcpClient.listTools()
-    await interaction.channel.send(
+    const toolsJSON = tools.tools
+    await interaction.reply(
       "**MCP Status**\n" +
         "- ✅ Connected to MCP Server\n" +
         `- 🛠️ Registered tools: ${
-          tools.map((t) => `\`${t.name}\``).join(", ") || "None"
+          toolsJSON.map((t) => `\`${t.name}\``).join(", ") || "None"
         }`
     )
   } catch (err) {
+    logger.error(err)
     await interaction.reply("⚠️ Connection to MCP Server is wonky")
   }
 }
