@@ -7,7 +7,7 @@
 import { Client, Message } from "discord.js"
 import { OpenAI } from "openai"
 import { logger } from "../../utils/logger.js"
-import { Client as McpClient } from "@modelcontextprotocol/sdk/client/index.js"
+import { getMCPClient } from "../../utils/mcpClient.js"
 const maxLength = 2000 // The current max character length of a Discord message
 
 /**
@@ -15,11 +15,11 @@ const maxLength = 2000 // The current max character length of a Discord message
  * @param {Message} messageContext The Discord message context
  * @param {OpenAI} openai The openai instance
  * @param {Client} client The Discord bot client instance
- * @param {McpClient} mcpClient The MCP Client reference
  */
-export async function chatgpt(messageContext, openai, client, mcpClient) {
+export async function chatgpt(messageContext, openai, client) {
   logger.debug("Attempting chatgpt call")
   let typingStatus = null
+  const mcpClient = getMCPClient()
 
   try {
     // Init Morgana with some context. Boy this was a weird context to init with.

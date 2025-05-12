@@ -96,6 +96,9 @@ async function connectMCP() {
 }
 
 function getMCPClient() {
+  if (!mcpClient) {
+    logger.warn("MCP Client not ready or not yet initialized")
+  }
   return mcpClient
 }
 
@@ -103,7 +106,7 @@ function stopMCP() {
   if (reconnectTimeout) {
     clearTimeout(reconnectTimeout)
   }
-  logger.info('Stopping MCP Client...')
+  logger.info("Stopping MCP Client...")
   return mcpClient.close()
 }
 

@@ -65,7 +65,7 @@ client.on("messageCreate", async (message) => {
       message.channel.id == process.env.CHATGPT_CHANNEL &&
       !message.content.startsWith("!")
     ) {
-      chatgpt(message, openAI, client, mcpClient)
+      chatgpt(message, openAI, client)
     }
   } else {
     // Make morgana respond only if he's mentioned
@@ -75,7 +75,7 @@ client.on("messageCreate", async (message) => {
       message.mentions.members.has(client.user.id)
     ) {
       logger.debug("I was mentioned! I should respond.")
-      chatgpt(message, openAI, client, mcpClient)
+      chatgpt(message, openAI, client)
     }
   }
 
