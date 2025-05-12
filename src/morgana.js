@@ -65,6 +65,7 @@ client.on("messageCreate", async (message) => {
       message.channel.id == process.env.CHATGPT_CHANNEL &&
       !message.content.startsWith("!")
     ) {
+      await connectMCP()
       chatgpt(message, openAI, client)
     }
   } else {
@@ -75,6 +76,7 @@ client.on("messageCreate", async (message) => {
       message.mentions.members.has(client.user.id)
     ) {
       logger.debug("I was mentioned! I should respond.")
+      await connectMCP()
       chatgpt(message, openAI, client)
     }
   }

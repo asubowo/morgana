@@ -8,7 +8,7 @@ import { logger } from "./logger.js"
 const mcpServerUrl = process.env.MCP_SERVER_URL || "http://localhost:9595/sse"
 
 let mcpClient = null
-let reconnectTimeout = null
+// let reconnectTimeout = null
 let isConnecting = false
 let mcpToken = ""
 
@@ -38,31 +38,20 @@ async function connectMCP() {
   }
 
   mcpToken = tokenData.token
-  const now = Math.floor(Date.now() / 1000)
-  const msUntilRefresh = (tokenData.expiresAt - now - 30) * 1000
-  logger.info(
-    `Next token refresh scheduled in ${Math.floor(
-      msUntilRefresh / 1000
-    )} seconds`
-  )
   logger.debug(
     `Token expires at ${new Date(tokenData.expiresAt * 1000).toISOString()}`
   )
 
-  // Schedule next reconnect
-  if (reconnectTimeout) clearTimeout(reconnectTimeout)
-  reconnectTimeout = setTimeout(connectMCP, msUntilRefresh)
-
   const transport = new SSEClientTransport(new URL(mcpServerUrl), {
     requestInit: {
       headers: {
-        authorization: `Bearer ${mcpToken ?? ""}`,
+        authorization: `Bearer ${mcpToken}`,
       },
     },
     eventSourceInit: {
       async fetch(input, init = {}) {
         const headers = new Headers(init.headers || {})
-        headers.set("authorization", `Bearer ${mcpToken ?? ""}`)
+        headers.set("authorization", `Bearer ${mcpToken}`)
         return fetch(input, { ...init, headers })
       },
     },
@@ -103,10 +92,6 @@ function getMCPClient() {
 }
 
 function stopMCP() {
-  if (reconnectTimeout) {
-    clearTimeout(reconnectTimeout)
-    reconnectTimeout = null
-  }
   isConnecting = false
   logger.info("Stopping MCP Client...")
   if (mcpClient) {
