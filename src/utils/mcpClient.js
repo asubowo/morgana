@@ -56,13 +56,17 @@ async function connectMCP() {
   const transport = new SSEClientTransport(new URL(mcpServerUrl), {
     requestInit: {
       headers: {
-        authorization: `Bearer ${mcpToken}`,
+        authorization: `Bearer ${tokenData.token ?? ""}`,
       },
     },
     eventSourceInit: {
       async fetch(input, init = {}) {
         const headers = new Headers(init.headers || {})
-        headers.set("authorization", `Bearer ${mcpToken}`)
+        const tokenData = await fetchAccessToken()
+        if (!tokenData) {
+          logger.error("Unable to fetch access token from auth server!")
+        }
+        headers.set("authorization", `Bearer ${tokenData.token ?? ""}`)
         return fetch(input, { ...init, headers })
       },
     },
@@ -89,7 +93,7 @@ async function connectMCP() {
     mcpClient = newClient
   } catch (err) {
     logger.error("Failed to connect to MCP:", err)
-    logger.warn("MCP tools will be unavailable")
+    logger.warn("MCP tools will be unavailable until restart")
   }
 
   isConnecting = false
@@ -105,9 +109,15 @@ function getMCPClient() {
 function stopMCP() {
   if (reconnectTimeout) {
     clearTimeout(reconnectTimeout)
+    reconnectTimeout = null
   }
+  isConnecting = false
   logger.info("Stopping MCP Client...")
-  return mcpClient.close()
+  if (mcpClient) {
+    return mcpClient.close()
+  } else {
+    logger.info("Client already stopped.")
+  }
 }
 
 export { connectMCP, getMCPClient, stopMCP }
