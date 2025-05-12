@@ -1,11 +1,10 @@
 // Only run this as needed.
+import "./utils/env.js"
 import { Routes } from 'discord.js'
 import { REST } from '@discordjs/rest'
 import fs from 'fs'
 import path from 'path'
-import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
-dotenv.config({ path: '.env' })
 
 const token  = process.env.TOKEN;
 const clientID  = process.env.CLIENT_ID;
@@ -27,5 +26,5 @@ for (const file of commandFiles) {
 const rest = new REST({ version: '10' }).setToken(token);
 
 rest.put(Routes.applicationCommands(clientID), {body: commands})
-    .then(() => logger.info('Refreshed application slash commands.'))
-    .catch(logger.error);
+    .then(() => console.log('Refreshed application slash commands.'))
+    .catch();

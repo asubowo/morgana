@@ -4,7 +4,7 @@ services:
       context: .
       target: production
     container_name: morgana
-    image: asubowo/morgana:3.3
+    image: asubowo/morgana:4.0
     restart: unless-stopped
     env_file: .env
     networks:

@@ -1,17 +1,58 @@
+<<<<<<< HEAD
+const LOG_LEVELS = ["error", "warn", "info", "debug"]
+=======
 import dotenv from 'dotenv'
 dotenv.config()
 
 const LOG_LEVELS = ['error', 'warn', 'info', 'debug']
 const CURRENT_LOG_LEVEL = process.env.LOG_LEVEL || 'info'
+>>>>>>> 690f6e18650d8860dca049666225850ed6738a0d
 
+const rawLogLevel = (process.env.LOG_LEVEL || "info").toLowerCase()
+const CURRENT_LOG_LEVEL = LOG_LEVELS.includes(rawLogLevel)
+  ? rawLogLevel
+  : "info"
 
 function shouldLog(level) {
   return LOG_LEVELS.indexOf(level) <= LOG_LEVELS.indexOf(CURRENT_LOG_LEVEL)
+<<<<<<< HEAD
 }
 
-export const logger = {
-  error: (...args) => shouldLog('error') && console.error('[ERROR]', ...args),
-  warn: (...args) => shouldLog('warn') && console.warn('[WARN]', ...args),
-  info: (...args) => shouldLog('info') && console.info('[INFO]', ...args),
-  debug: (...args) => shouldLog('debug') && console.debug('[DEBUG]', ...args),
-};
+function formatMessage(level, args) {
+  const now = new Date()
+  const date = now.toLocaleDateString("en-CA") // ISO-style date
+  const time = now.toLocaleTimeString("en-US", {
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  })
+
+  const colorCodes = {
+    error: "\x1b[31m", // Red
+    warn: "\x1b[33m", // Yellow
+    info: "\x1b[36m", // Cyan
+    debug: "\x1b[90m", // Gray
+  }
+
+  const resetCode = "\x1b[0m"
+  const levelTag = `${colorCodes[level]}[${level
+    .toUpperCase()
+    .padEnd(5)}]${resetCode}`
+  const timestamp = `[${date} ${time}]`
+
+  return [`${levelTag} ${timestamp}`, ...args]
+=======
+>>>>>>> 690f6e18650d8860dca049666225850ed6738a0d
+}
+
+export const logger = Object.fromEntries(
+  LOG_LEVELS.map((level) => [
+    level,
+    (...args) => {
+      if (shouldLog(level)) {
+        console[level](...formatMessage(level, args))
+      }
+    },
+  ])
+)

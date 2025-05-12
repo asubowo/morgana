@@ -3,86 +3,79 @@
  * @version 4.0
  */
 
-import dotenv from 'dotenv'
-import fs from 'fs'
-import path from 'path'
-import { Client, GatewayIntentBits, Collection, ActivityType } from 'discord.js'
-import { OpenAI } from 'openai'
-import { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js'
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
-import { getStonks } from './commands/utils/stocks.js'
-import { sublinker } from './commands/reddit/sublinker.js'
-import { chatgpt } from './commands/utils/openai.js'
-import { fileURLToPath } from 'url'
-import { logger } from './utils/logger.js'
+import "./utils/env.js"
+import fs from "fs"
+import path from "path"
+import { Client, GatewayIntentBits, Collection, ActivityType } from "discord.js"
+import { OpenAI } from "openai"
 
-const respondAnywhere = process.env.RESPOND_ANYWHERE || false;
-const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:9595/sse'
+import { getStonks } from "./commands/utils/stocks.js"
+import { sublinker } from "./commands/reddit/sublinker.js"
+import { chatgpt } from "./commands/utils/openai.js"
+import { fileURLToPath } from "url"
+import { logger } from "./utils/logger.js"
+import { connectMCP, getMCPClient, stopMCP } from "./utils/mcpClient.js"
 
-const __filename = fileURLToPath(import.meta.url);
+const respondAnywhere = process.env.RESPOND_ANYWHERE || false
+const openAIKey = process.env.CHATGPT_API_KEY
+
+const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+const commandsPath = path.join(__dirname, "commands")
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith(".js"))
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
+// Discord and OpenAI inits
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates,
+  ],
+})
+const openAI = new OpenAI({
+  apiKey: openAIKey,
+})
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] })
+let mcpClient = null
+
 client.commands = new Collection()
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
-
+// command set
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file)
   const command = await import(`file://${filePath}`)
   client.commands.set(command.data.name, command)
 }
 
-// Create an instance of McpClient
-let mcpClient = new McpClient({
-  name: 'morgana', version: '4.0'
-},
-  { capabilities: {} },
-)
-const transport = new SSEClientTransport(new URL(mcpServerUrl))
-
-async function connectMCP() {
-  logger.info("attempting to connect to MCP server")
-  try {
-    await mcpClient.connect(transport)
-    logger.info("MCP connected!")
-    const tools = await mcpClient.listTools();
-    logger.debug("Available tools from MCP:", tools)
-    return mcpClient
-  } catch (err) {
-    logger.error("Failed to connect MCP:", err);
-    logger.warn("MCP server is unreachable. MCP tools will be unavailable for the remainder of this instance.")
-    logger.debug(mcpClient)
-    return null;
-  }
-}
-
-// OpenAI init
-const openAI = new OpenAI({
-  apiKey: process.env.CHATGPT_API_KEY,
-});
-
-client.once('ready', function () {
-  logger.info('bot initialized');
+client.once("ready", function () {
+  logger.info("bot initialized")
   client.user.setPresence({
-    activities: [{ name: 'over Cafe LeBlanc', type: ActivityType.Watching }]
-  });
-});
+    activities: [{ name: "over Cafe LeBlanc", type: ActivityType.Watching }],
+  })
+})
 
 // Intercept regular messages for stock and subreddit hotlinking
-client.on('messageCreate', async message => {
+client.on("messageCreate", async (message) => {
   if (respondAnywhere === "false") {
     //Check if we're in the targeted chatgpt channel
-    if (!message.author.bot && message.channel.id == process.env.CHATGPT_CHANNEL && !message.content.startsWith('!')) {
-      chatgpt(message, openAI, client, mcpClient)
+    if (
+      !message.author.bot &&
+      message.channel.id == process.env.CHATGPT_CHANNEL &&
+      !message.content.startsWith("!")
+    ) {
+      chatgpt(message, openAI, client)
     }
   } else {
     // Make morgana respond only if he's mentioned
-    if (!message.author.bot && !message.content.startsWith('!') && (message.mentions.members.has(client.user.id))) {
+    if (
+      !message.author.bot &&
+      !message.content.startsWith("!") &&
+      message.mentions.members.has(client.user.id)
+    ) {
       logger.debug("I was mentioned! I should respond.")
-      chatgpt(message, openAI, client, mcpClient)
+      chatgpt(message, openAI, client)
     }
   }
 
@@ -99,21 +92,25 @@ client.on('messageCreate', async message => {
 })
 
 // This is a little mean, but based on a targeted user, when they delete a message immediately repost it
-client.on('messageDelete', async message => {
+client.on("messageDelete", async (message) => {
   if (process.env.SNIPE_USER_ID !== undefined) {
     if (message.author.id == process.env.SNIPE_USER_ID) {
-      var content = message.content
-      message.channel.send("_SNIPED! This is what <@!" + process.env.SNIPE_USER_ID + "> said:_\n" + content)
+      let content = message.content
+      message.channel.send(
+        "_SNIPED! This is what <@!" +
+          process.env.SNIPE_USER_ID +
+          "> said:_\n" +
+          content
+      )
     }
   }
-});
+})
 
 /**
  * Slash command handler
  */
-client.on('interactionCreate', async interaction => {
-
-  if (!interaction.isChatInputCommand()) return;
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isChatInputCommand()) return
   // If the slash command isn't anything we know of at boot, ignore it
   const command = client.commands.get(interaction.commandName)
   if (!command) return
@@ -124,13 +121,7 @@ client.on('interactionCreate', async interaction => {
     logger.error(error)
     await interaction.reply({ content: "Try again next time", ephemeral: true })
   }
-});
-
-process.on('SIGINT', () => {
-  mcpClient.close()
-  logger.info("Gracefully closed MCP connection")
-  process.exit()
-});
+})
 
 /**
  * Check if a message contains a stock ticker
@@ -155,16 +146,26 @@ function containsSubreddit(message) {
   const subreddits = message.match(regex)
 
   // Ignore if someone linked to reddit directly.
-  if (message.includes('http')) {
+  if (message.includes("http")) {
     return false
-  }
-  else if (subreddits === null || subreddits.length == 0) {
+  } else if (subreddits === null || subreddits.length == 0) {
     return false
   } else {
     return true
   }
 }
 
-logger.info(`Using log level: ${process.env.LOG_LEVEL || 'info'}`)
-connectMCP()
-client.login(process.env.TOKEN); 
+logger.info(`Using log level: ${process.env.LOG_LEVEL || "info"}`)
+try {
+  await connectMCP()
+  mcpClient = getMCPClient()
+  client.login(process.env.TOKEN)
+} catch (err) {
+  logger.error("Failed to initialize Morgana!", err)
+}
+
+process.on("SIGINT", async () => {
+  await stopMCP()
+  logger.info("Gracefully closed MCP connection")
+  process.exit()
+})
