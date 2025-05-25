@@ -17,6 +17,8 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(interaction) {
   // on close the mcp client should be returned null or ""
+  // attempt a connection
+  await connectMCP()
   let mcpClient = getMCPClient()
   if (!mcpClient) {
     await interaction.reply("❌ Not connected to MCP server.")
@@ -24,8 +26,6 @@ export async function execute(interaction) {
   }
 
   try {
-    // attempt a connection
-    await connectMCP()
     const tools = await mcpClient.listTools()
     const toolsJSON = tools.tools
     await interaction.reply(
