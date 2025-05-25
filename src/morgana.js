@@ -161,7 +161,7 @@ try {
   mcpClient = getMCPClient()
   client.login(process.env.TOKEN)
 } catch (err) {
-  logger.error("Failed to initialize Morgana!", err)
+  logger.warn("Issue detected initializing Morgana", err)
 }
 
 process.on("SIGINT", async () => {

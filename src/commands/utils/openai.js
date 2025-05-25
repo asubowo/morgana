@@ -104,6 +104,7 @@ export async function chatgpt(messageContext, openai, client) {
     if (reply.tool_calls) {
       logger.info("Tool call made")
       const toolCall = reply.tool_calls[0]
+      logger.info(`Calling tool: ${toolCall.function.name ?? 'unknown'}`)
       const args = JSON.parse(toolCall.function.arguments)
 
       let toolResponseContent
