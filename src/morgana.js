@@ -158,10 +158,10 @@ function containsSubreddit(message) {
 logger.info(`Using log level: ${process.env.LOG_LEVEL || "info"}`)
 try {
   await connectMCP()
-  mcpClient = getMCPClient()
+  await mcpClient = getMCPClient()
   client.login(process.env.TOKEN)
 } catch (err) {
-  logger.warn("Issue detected initializing Morgana", err)
+  logger.error("Issue detected initializing Morgana", err)
 }
 
 process.on("SIGINT", async () => {
