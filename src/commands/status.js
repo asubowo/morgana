@@ -5,7 +5,7 @@
 
 import { SlashCommandBuilder, CommandInteraction } from "discord.js"
 import { logger } from "../utils/logger.js"
-import { getMCPClient } from "../utils/mcpClient.js"
+import { getMCPClient, connectMCP } from "../utils/mcpClient.js"
 
 export const data = new SlashCommandBuilder()
   .setName("health")
@@ -25,7 +25,7 @@ export async function execute(interaction) {
 
   try {
     // attempt a connection
-    await mcpClient.connectMCP()
+    await connectMCP()
     const tools = await mcpClient.listTools()
     const toolsJSON = tools.tools
     await interaction.reply(
