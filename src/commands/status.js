@@ -5,7 +5,7 @@
 
 import { SlashCommandBuilder, CommandInteraction } from "discord.js"
 import { logger } from "../utils/logger.js"
-import { getMCPClient } from "../utils/mcpClient.js"
+import { getMCPClient, connectMCP } from "../utils/mcpClient.js"
 
 export const data = new SlashCommandBuilder()
   .setName("health")
@@ -17,6 +17,8 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(interaction) {
   // on close the mcp client should be returned null or ""
+  // attempt a connection
+  await connectMCP()
   let mcpClient = getMCPClient()
   if (!mcpClient) {
     await interaction.reply("❌ Not connected to MCP server.")
