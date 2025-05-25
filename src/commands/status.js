@@ -24,6 +24,8 @@ export async function execute(interaction) {
   }
 
   try {
+    // attempt a connection
+    await mcpClient.connectMCP()
     const tools = await mcpClient.listTools()
     const toolsJSON = tools.tools
     await interaction.reply(
