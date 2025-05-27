@@ -14,7 +14,7 @@ import { sublinker } from "./commands/reddit/sublinker.js"
 import { chatgpt } from "./commands/utils/openai.js"
 import { fileURLToPath } from "url"
 import { logger } from "./utils/logger.js"
-import { connectMCP, getMCPClient, stopMCP } from "./utils/mcpClient.js"
+import { connectMCP, closeMCP } from "./utils/mcpClient.js"
 
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false
 const openAIKey = process.env.CHATGPT_API_KEY
@@ -164,7 +164,7 @@ try {
 }
 
 process.on("SIGINT", async () => {
-  await stopMCP()
+  await closeMCP()
   logger.info("Gracefully closed MCP connection")
   process.exit()
 })

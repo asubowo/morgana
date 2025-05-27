@@ -91,14 +91,18 @@ function getMCPClient() {
   return mcpClient
 }
 
-function stopMCP() {
-  isConnecting = false
-  logger.info("Stopping MCP Client...")
-  if (mcpClient) {
-    return mcpClient.close()
-  } else {
-    logger.info("Client already stopped.")
+function closeMCP() {
+  logger.info("Closing connection")
+  try {
+    if (mcpClient) {
+      isConnecting = false
+      return mcpClient.close()
+    } else {
+      logger.info("Client already stopped.")
+    }
+  } catch (error) {
+    logger.warn("Error closing MCP connection", error)
   }
 }
 
-export { connectMCP, getMCPClient, stopMCP }
+export { connectMCP, getMCPClient, closeMCP }
