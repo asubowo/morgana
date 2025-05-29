@@ -25,12 +25,17 @@ export async function fetchAccessToken() {
 
   const wellKnownResponse = await fetch(oauthWellKnown)
   if (!wellKnownResponse.ok) {
-    logger.error('Failed to fetch well-known config')
+    logger.error("Failed to fetch well-known config")
     return
   }
 
   const wellKnownData = await wellKnownResponse.json()
   const tokenUrl = wellKnownData.token_endpoint
+
+  if (!tokenUrl) {
+    logger.error("Token endpoint not found in openid well known configuration!")
+    return
+  }
 
   const params = new URLSearchParams()
   params.append("grant_type", "client_credentials")
