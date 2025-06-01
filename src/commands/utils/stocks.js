@@ -23,7 +23,7 @@ yahooFinance.setGlobalConfig({ cookieJar })
 export async function getStonks(messageContext) {
   var regex = /\$([A-Z])\w{0,4}\b/gim
   var stock = messageContext.content.match(regex)
-  console.debug("Detected stocks in message:", stock)
+  logger.debug("Detected stocks in message:", stock)
 
   for (var index = 0; index < stock.length; index++) {
     let element = stock[index] + ""
@@ -45,7 +45,7 @@ export async function getStonks(messageContext) {
     let marketPrices = []
 
     for (var i = 0; i < stock.length; i++) {
-      console.debug("Attempting to retrieve quote for", stock[i])
+      logger.debug("Attempting to retrieve quote for", stock[i])
       const quote = await yahooFinance.quote(stock[i])
       const {
         regularMarketPrice,
