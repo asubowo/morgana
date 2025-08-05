@@ -16,11 +16,24 @@ export async function fetchAccessToken() {
 
   const clientId = process.env.OAUTH_CLIENT_ID
   const clientSecret = process.env.OAUTH_CLIENT_SECRET
-  const authUrl = process.env.OAUTH_BASE_URL
-  const tokenUrl = `${authUrl}/realms/subspace/protocol/openid-connect/token`
+  const oauthWellKnown = process.env.OAUTH_WELL_KNOWN
 
   if (!clientId || !clientSecret) {
     logger.warn("OAuth client ID or secret not specified!")
+    return
+  }
+
+  const wellKnownResponse = await fetch(oauthWellKnown)
+  if (!wellKnownResponse.ok) {
+    logger.error("Failed to fetch well-known config")
+    return
+  }
+
+  const wellKnownData = await wellKnownResponse.json()
+  const tokenUrl = wellKnownData.token_endpoint
+
+  if (!tokenUrl) {
+    logger.error("Token endpoint not found in openid well known configuration!")
     return
   }
 

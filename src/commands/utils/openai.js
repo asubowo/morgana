@@ -7,7 +7,7 @@
 import { Client, Message } from "discord.js"
 import { OpenAI } from "openai"
 import { logger } from "../../utils/logger.js"
-import { getMCPClient } from "../../utils/mcpClient.js"
+import { getMCPClient, closeMCP } from "../../utils/mcpClient.js"
 const maxLength = 2000 // The current max character length of a Discord message
 
 /**
@@ -104,6 +104,7 @@ export async function chatgpt(messageContext, openai, client) {
     if (reply.tool_calls) {
       logger.info("Tool call made")
       const toolCall = reply.tool_calls[0]
+      logger.info(`Calling tool: ${toolCall.function.name ?? 'unknown'}`)
       const args = JSON.parse(toolCall.function.arguments)
 
       let toolResponseContent
@@ -157,6 +158,7 @@ export async function chatgpt(messageContext, openai, client) {
 
     respond(reply.content, messageContext)
     clearInterval(typingStatus)
+    closeMCP() // Close connection to MCP server on completion
   } catch (error) {
     logger.error("CHATGPT ERR:", error)
     clearInterval(typingStatus)

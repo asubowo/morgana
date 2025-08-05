@@ -14,7 +14,7 @@ import { sublinker } from "./commands/reddit/sublinker.js"
 import { chatgpt } from "./commands/utils/openai.js"
 import { fileURLToPath } from "url"
 import { logger } from "./utils/logger.js"
-import { connectMCP, getMCPClient, stopMCP } from "./utils/mcpClient.js"
+import { connectMCP, closeMCP } from "./utils/mcpClient.js"
 
 const respondAnywhere = process.env.RESPOND_ANYWHERE || false
 const openAIKey = process.env.CHATGPT_API_KEY
@@ -161,14 +161,13 @@ function containsSubreddit(message) {
 logger.info(`Using log level: ${process.env.LOG_LEVEL || "info"}`)
 try {
   await connectMCP()
-  mcpClient = getMCPClient()
   client.login(process.env.TOKEN)
 } catch (err) {
-  logger.error("Failed to initialize Morgana!", err)
+  logger.error("Issue detected initializing Morgana", err)
 }
 
 process.on("SIGINT", async () => {
-  await stopMCP()
+  await closeMCP()
   logger.info("Gracefully closed MCP connection")
   process.exit()
 })
