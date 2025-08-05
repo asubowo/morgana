@@ -38,5 +38,5 @@ export async function execute(interaction) {
 
   const attachment = new AttachmentBuilder(gifBuffer, { name: "citation.gif" })
 
-  return interaction.editReply({ files: [attachment] })
+  return interaction.editReply({ content: null, files: [attachment], ephemeral: false })
 }
