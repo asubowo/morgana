@@ -33,7 +33,7 @@ export async function execute(interaction) {
   logger.info("Generating citation")
 
   // This returns a Buffer
-  const gifBuffer = await citation.render("citation.gif", true)
+  const gifBuffer = await citation.render(true)
 
   const attachment = new AttachmentBuilder(gifBuffer, { name: "citation.gif" })
 
