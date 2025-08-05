@@ -25,6 +25,7 @@ export const data = new SlashCommandBuilder()
  * @returns A Discord Embed holding the result
  */
 export async function execute(interaction) {
+  await interaction.reply({ content: "Generating citation...", ephemeral: true })
   const reason = interaction.options.getString("reason")
 
   const citation = new Citation()
