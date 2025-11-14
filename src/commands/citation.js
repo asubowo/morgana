@@ -25,7 +25,7 @@ export const data = new SlashCommandBuilder()
  * @returns A Discord Embed holding the result
  */
 export async function execute(interaction) {
-  await interaction.reply({ content: "Generating citation...", ephemeral: true })
+  await interaction.reply({ content: "Generating citation..." })
   const reason = interaction.options.getString("reason")
 
   const citation = new Citation()
@@ -38,5 +38,5 @@ export async function execute(interaction) {
 
   const attachment = new AttachmentBuilder(gifBuffer, { name: "citation.gif" })
 
-  return interaction.reply({ files: [attachment] })
+  return interaction.editReply({ content: null, files: [attachment] })
 }
