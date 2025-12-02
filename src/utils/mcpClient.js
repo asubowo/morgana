@@ -1,11 +1,11 @@
 // utils/mcpClient.js
 import { Client as McpClient } from "@modelcontextprotocol/sdk/client/index.js"
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js"
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js"
 import { EventSource } from "eventsource"
 import { fetchAccessToken } from "./oauth.js"
 import { logger } from "./logger.js"
 
-const mcpServerUrl = process.env.MCP_SERVER_URL || "http://localhost:9595/sse"
+const mcpServerUrl = process.env.MCP_SERVER_URL || "http://localhost:9595/mcp"
 
 let mcpClient = null
 // let reconnectTimeout = null
@@ -42,19 +42,12 @@ async function connectMCP() {
     `Token expires at ${new Date(tokenData.expiresAt * 1000).toISOString()}`
   )
 
-  const transport = new SSEClientTransport(new URL(mcpServerUrl), {
+  const transport = new StreamableHTTPClientTransport(new URL(mcpServerUrl), {
     requestInit: {
       headers: {
         authorization: `Bearer ${mcpToken}`,
       },
-    },
-    eventSourceInit: {
-      async fetch(input, init = {}) {
-        const headers = new Headers(init.headers || {})
-        headers.set("authorization", `Bearer ${mcpToken}`)
-        return fetch(input, { ...init, headers })
-      },
-    },
+    }
   })
 
   try {
