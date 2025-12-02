@@ -39,6 +39,9 @@ const openAI = new OpenAI({
   apiKey: openAIKey,
 })
 
+
+let mcpClient = null
+
 client.commands = new Collection()
 // command set
 for (const file of commandFiles) {
