@@ -49,15 +49,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }} 
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          body: |
-            # Release Notes
-            This release corresponds to tag **${{ github.ref_name }}**.
-            ${{ steps.changelog.outputs.changelog }}
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
           draft: false
           prerelease: ${{ startsWith(github.ref_name, 'rc-') }}

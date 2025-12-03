@@ -1,18 +1,16 @@
 // utils/mcpClient.js
+// this is used for a stateless MCP
 import { Client as McpClient } from "@modelcontextprotocol/sdk/client/index.js"
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js"
-import { EventSource } from "eventsource"
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js"
 import { fetchAccessToken } from "./oauth.js"
 import { logger } from "./logger.js"
 
-const mcpServerUrl = process.env.MCP_SERVER_URL || "http://localhost:9595/sse"
+const mcpServerUrl = process.env.MCP_SERVER_URL || "http://localhost:9595/mcp"
 
 let mcpClient = null
 // let reconnectTimeout = null
 let isConnecting = false
 let mcpToken = ""
-
-globalThis.EventSource = EventSource
 
 // I don't know at this point.
 // Ref: https://github.com/modelcontextprotocol/typescript-sdk/blob/main/src/client/sse.ts
@@ -42,26 +40,21 @@ async function connectMCP() {
     `Token expires at ${new Date(tokenData.expiresAt * 1000).toISOString()}`
   )
 
-  const transport = new SSEClientTransport(new URL(mcpServerUrl), {
+  const transport = new StreamableHTTPClientTransport(new URL(mcpServerUrl), {
     requestInit: {
       headers: {
         authorization: `Bearer ${mcpToken}`,
       },
     },
-    eventSourceInit: {
-      async fetch(input, init = {}) {
-        const headers = new Headers(init.headers || {})
-        headers.set("authorization", `Bearer ${mcpToken}`)
-        return fetch(input, { ...init, headers })
-      },
-    },
   })
 
-  try {
-    await mcpClient.close()
-    logger.info("Closed previous MCP connection")
-  } catch (err) {
-    logger.warn("No existing MCP connection to close (or error closing):", err)
+  if (mcpClient) {
+    try {
+      await mcpClient.close()
+      logger.info("Closed previous MCP connection")
+    } catch (err) {
+      logger.warn("Error closing previous MCP connection:", err)
+    }
   }
 
   // Reinitialize
@@ -78,7 +71,6 @@ async function connectMCP() {
     mcpClient = newClient
   } catch (err) {
     logger.error("Failed to connect to MCP:", err)
-    logger.warn("MCP tools will be unavailable until restart")
   }
 
   isConnecting = false
@@ -91,17 +83,15 @@ function getMCPClient() {
   return mcpClient
 }
 
-function closeMCP() {
+async function closeMCP() {
   logger.info("Closing connection")
-  try {
-    if (mcpClient) {
-      isConnecting = false
-      return mcpClient.close()
-    } else {
-      logger.info("Client already stopped.")
+  if (mcpClient) {
+    try {
+      await mcpClient.close()
+      logger.info("Closed previous MCP connection")
+    } catch (err) {
+      logger.warn("Error closing previous MCP connection:", err)
     }
-  } catch (error) {
-    logger.warn("Error closing MCP connection", error)
   }
 }
 
