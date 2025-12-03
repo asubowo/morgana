@@ -11,8 +11,31 @@ let mcpClient = null
 // let reconnectTimeout = null
 let isConnecting = false
 let mcpToken = ""
+let lastSeenSessionId = null
 
 globalThis.EventSource = EventSource
+if (!globalThis.__MCP_FETCH_WRAPPED__) {
+  const originalFetch = globalThis.fetch
+
+  globalThis.fetch = async (...args) => {
+    const res = await originalFetch(...args)
+
+    try {
+      const sessionId = res.headers?.get?.('mcp-session-id')
+      if (sessionId) {
+        lastSeenSessionId = sessionId
+        logger.debug(`Was assigned MCP session: ${lastSeenSessionId}`)
+      }
+    } catch (err) {
+      logger.warn('[MCP] Error reading session header from response:', err)
+    }
+
+    return res
+  }
+
+  globalThis.__MCP_FETCH_WRAPPED__ = true
+  logger.debug('Wrapped global fetch for session logging')
+}
 
 // I don't know at this point.
 // Ref: https://github.com/modelcontextprotocol/typescript-sdk/blob/main/src/client/sse.ts
